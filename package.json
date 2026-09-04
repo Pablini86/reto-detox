@@ -1,0 +1,7 @@
+{
+  "name": "reto-detox-pablo",
+  "private": true,
+  "dependencies": {
+    "ioredis": "^5.11.1"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Reto Detox — Pablo",
+  "short_name": "Detox",
+  "description": "Plan de alimentación simple del Reto Detox, con lista del súper y registro de progreso.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F3F5F2",
+  "theme_color": "#12855A",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

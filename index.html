@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reto Detox — Pablo</title>
+<meta name="description" content="Plan de alimentación simple del Reto Detox, con lista del súper, prep del domingo y registro de progreso.">
+<meta name="theme-color" content="#12855A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Detox">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.js" integrity="sha384-iU8HYtnGQ8Cy4zl7gbNMOhsDTTKX02BTXptVP/vqAWIaTfM7isw76iyZCsjL2eVi" crossorigin="anonymous"></script>
+<style>
+  :root{
+    --bg:        #F3F5F2;
+    --card:      #FFFFFF;
+    --border:    #E4E7E2;
+    --ink:       #14171A;
+    --ink-soft:  #667069;
+    --ink-faint: #9AA39C;
+    --green:     #12855A;
+    --green-dark:#0C6644;
+    --green-soft:#E4F3EC;
+    --amber:     #B45309;
+    --amber-soft:#FBEEDC;
+    --red:       #D64328;
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+    color-scheme: light;
+  }
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:92px;
+  }
+  button{ font-family:inherit; }
+  input,select{ font-family:inherit; }
+  :focus-visible{ outline:3px solid var(--green); outline-offset:2px; border-radius:6px; }
+  .mono{ font-family:'JetBrains Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
+  .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+  main{ max-width:480px; margin:0 auto; padding:0 16px; }
+
+  header.top{ padding:20px 16px 4px; max-width:480px; margin:0 auto; }
+  .eyebrow{ font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:4px; }
+  h1.greet{ font-size:25px; font-weight:800; margin:0 0 2px; letter-spacing:-.01em; }
+  .sub-date{ font-size:14px; color:var(--ink-soft); margin-bottom:6px; }
+  .sync-status{ font-size:11.5px; font-weight:600; margin-bottom:16px; display:inline-flex; align-items:center; gap:5px; }
+  .sync-status::before{ content:""; width:6px; height:6px; border-radius:50%; background:var(--ink-faint); }
+  .sync-status.sync-ok{ color:var(--green); }
+  .sync-status.sync-ok::before{ background:var(--green); }
+  .sync-status.sync-syncing{ color:var(--ink-soft); }
+  .sync-status.sync-offline{ color:var(--ink-faint); }
+
+  .badge{
+    display:inline-flex; align-items:center; gap:5px; background:var(--green-soft); color:var(--green-dark);
+    font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:4px 9px; border-radius:20px;
+  }
+  .badge.amber{ background:var(--amber-soft); color:var(--amber); }
+
+  .card{
+    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
+    padding:16px; margin-bottom:14px; box-shadow:0 1px 2px rgba(20,23,26,.04);
+  }
+  .card h2{ font-size:15px; font-weight:800; margin:0 0 12px; letter-spacing:.01em; }
+  .card h2 .hint{ font-weight:600; color:var(--ink-faint); font-size:12px; }
+
+  .prestart{ background:var(--green-soft); border-color:#C9E7D7; }
+  .prestart p{ margin:6px 0 0; font-size:13.5px; color:var(--green-dark); line-height:1.5; }
+
+  /* progress bar */
+  .daybar-wrap{ display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+  .daybar{ flex:1; height:10px; border-radius:6px; background:var(--bg); overflow:hidden; border:1px solid var(--border); }
+  .daybar > i{ display:block; height:100%; background:var(--green); border-radius:6px; transition:width .3s; }
+  .daybar-num{ font-size:13px; font-weight:800; color:var(--green-dark); }
+
+  /* checklist rows */
+  .row{
+    display:flex; align-items:flex-start; gap:12px; padding:12px 4px; border-top:1px solid var(--border);
+  }
+  .row:first-of-type{ border-top:none; }
+  .check{
+    flex:none; width:26px; height:26px; border-radius:8px; border:2px solid var(--border); background:var(--card);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; margin-top:1px; transition:all .12s;
+  }
+  .check svg{ width:15px; height:15px; opacity:0; }
+  .check.on{ background:var(--green); border-color:var(--green); }
+  .check.on svg{ opacity:1; }
+  .row .body{ flex:1; min-width:0; }
+  .row .title{ font-size:14.5px; font-weight:700; }
+  .row .title.done{ color:var(--ink-faint); text-decoration:line-through; text-decoration-thickness:1px; }
+  .row .meta{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+  .row .expand-btn{
+    background:none; border:none; color:var(--green-dark); font-size:12.5px; font-weight:700; padding:6px 0 0; cursor:pointer;
+  }
+  .recipe{
+    margin-top:8px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm);
+    padding:12px 12px 4px; font-size:13px; line-height:1.55;
+  }
+  .recipe h4{ margin:0 0 6px; font-size:13px; font-weight:800; }
+  .recipe ul{ margin:0 0 8px; padding-left:18px; }
+  .recipe ol{ margin:0 0 8px; padding-left:18px; }
+  .recipe li{ margin-bottom:3px; }
+  .recipe .tally{ color:var(--ink-faint); font-size:11.5px; font-weight:600; padding:6px 0 8px; border-top:1px dashed var(--border); }
+  .recipe .swap{ color:var(--green-dark); font-size:12px; padding-bottom:8px; }
+
+  /* water cups */
+  .cups{ display:flex; gap:7px; flex-wrap:wrap; margin:4px 0 8px; }
+  .cup{
+    width:34px; height:40px; border-radius:6px 6px 8px 8px; border:2px solid var(--border); background:var(--card);
+    cursor:pointer; position:relative; overflow:hidden;
+  }
+  .cup.on{ border-color:var(--green); background:linear-gradient(to top, var(--green) 65%, var(--green-soft) 65%); }
+  .cups-label{ font-size:13px; font-weight:700; color:var(--ink-soft); }
+
+  /* feeling selector */
+  .feel-row{ padding:10px 0; border-top:1px solid var(--border); }
+  .feel-row:first-child{ border-top:none; }
+  .feel-row .fl{ font-size:13.5px; font-weight:700; margin-bottom:2px; }
+  .feel-row .fh{ font-size:11.5px; color:var(--ink-faint); margin-bottom:7px; }
+  .scale{ display:flex; gap:6px; }
+  .scale button{
+    flex:1; padding:9px 0; border-radius:8px; border:1.5px solid var(--border); background:var(--card);
+    font-weight:800; font-size:14px; color:var(--ink-soft); cursor:pointer;
+  }
+  .scale button.on{ background:var(--green); border-color:var(--green); color:#fff; }
+
+  /* stat pills */
+  .stats-strip{ display:flex; gap:10px; margin-bottom:14px; }
+  .stat-pill{ flex:1; background:var(--card); border:1px solid var(--border); border-radius:var(--radius-md); padding:12px; text-align:center; }
+  .stat-pill .n{ font-size:22px; font-weight:800; line-height:1; }
+  .stat-pill .l{ font-size:11px; color:var(--ink-soft); margin-top:4px; }
+
+  /* inputs */
+  .field{ display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap; margin-bottom:10px; }
+  .field label{ font-size:12px; font-weight:700; color:var(--ink-soft); display:block; margin-bottom:3px; }
+  .field input{
+    width:100%; padding:11px 12px; border-radius:10px; border:1.5px solid var(--border); background:var(--card);
+    font-size:15px; color:var(--ink);
+  }
+  .field .col{ flex:1; min-width:70px; }
+  button.btn{
+    background:var(--green); color:#fff; border:none; padding:12px 16px; border-radius:10px;
+    font-size:14px; font-weight:700; cursor:pointer;
+  }
+  button.btn:active{ background:var(--green-dark); }
+  button.btn.wide{ width:100%; }
+  button.btn.ghost{ background:none; border:1.5px solid var(--border); color:var(--ink-soft); }
+
+  .hist{ list-style:none; margin:10px 0 0; padding:0; }
+  .hist li{ display:flex; justify-content:space-between; align-items:center; gap:10px; padding:9px 0; border-top:1px solid var(--border); font-size:13.5px; }
+  .hist li .d{ color:var(--ink-soft); }
+  .hist li button{ background:none; border:none; color:var(--red); font-size:12px; font-weight:700; cursor:pointer; padding:4px; }
+  .chart-box{ position:relative; height:190px; margin:6px 0 2px; }
+
+  /* collapsible section (equivalencias / super) */
+  .acc{ border:1px solid var(--border); border-radius:var(--radius-md); background:var(--card); margin-bottom:10px; overflow:hidden; }
+  .acc > summary{
+    list-style:none; cursor:pointer; padding:14px 15px; font-size:14.5px; font-weight:800; display:flex; justify-content:space-between; align-items:center;
+  }
+  .acc > summary::-webkit-details-marker{ display:none; }
+  .acc > summary::after{ content:"+"; font-weight:800; color:var(--ink-faint); font-size:18px; }
+  .acc[open] > summary::after{ content:"–"; }
+  .acc .acc-body{ padding:0 15px 14px; font-size:13px; line-height:1.55; color:var(--ink); }
+  .acc .acc-body p{ margin:0 0 8px; }
+  table.eq{ width:100%; border-collapse:collapse; font-size:12.5px; }
+  table.eq td{ padding:6px 4px; border-top:1px solid var(--border); vertical-align:top; }
+  table.eq td:last-child{ text-align:right; font-weight:700; white-space:nowrap; color:var(--green-dark); }
+  .pill-list{ margin:0; padding-left:18px; }
+  .pill-list li{ margin-bottom:4px; }
+
+  .shop-item{ display:flex; align-items:center; gap:11px; padding:10px 2px; border-top:1px solid var(--border); }
+  .shop-item:first-child{ border-top:none; }
+  .shop-item .body{ flex:1; }
+  .shop-item .n{ font-size:14px; font-weight:600; }
+  .shop-item.on .n{ color:var(--ink-faint); text-decoration:line-through; }
+  .shop-item .q{ font-size:12px; color:var(--ink-soft); }
+  .shop-cat{ font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); margin:16px 0 2px; }
+  .shop-cat:first-child{ margin-top:4px; }
+
+  .note{ font-size:12px; color:var(--ink-soft); line-height:1.5; margin-top:10px; }
+
+  /* bottom nav */
+  nav.tabs{
+    position:fixed; left:0; right:0; bottom:0; background:var(--card); border-top:1px solid var(--border);
+    display:flex; padding:6px 6px calc(6px + env(safe-area-inset-bottom)); z-index:50;
+  }
+  nav.tabs button{
+    flex:1; background:none; border:none; padding:8px 4px 6px; cursor:pointer; color:var(--ink-faint);
+    font-size:11px; font-weight:700; display:flex; flex-direction:column; align-items:center; gap:3px;
+  }
+  nav.tabs button.on{ color:var(--green); }
+  nav.tabs button svg{ width:22px; height:22px; }
+
+  .view{ display:none; }
+  .view.on{ display:block; }
+  .view-pad{ padding-top:8px; }
+
+  /* password gate */
+  .gate{
+    position:fixed; inset:0; background:var(--bg); z-index:100; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; padding:24px; text-align:center;
+  }
+  .gate h2{ margin:0 0 6px; font-size:20px; }
+  .gate p{ margin:0 0 18px; color:var(--ink-soft); font-size:14px; max-width:320px; }
+  .gate input{ width:100%; max-width:280px; padding:13px 14px; border-radius:12px; border:1.5px solid var(--border); font-size:16px; margin-bottom:12px; }
+  .gate .err{ color:var(--red); font-size:13px; font-weight:600; min-height:18px; margin-bottom:8px; }
+</style>
+</head>
+<body>
+
+<div id="gate" class="gate" hidden>
+  <h2>Reto Detox</h2>
+  <p>Escribe la contraseña de la app (la misma que usas en la app de calistenia).</p>
+  <input id="gatePw" type="password" inputmode="text" autocomplete="current-password" placeholder="Contraseña">
+  <div class="err" id="gateErr"></div>
+  <button class="btn" id="gateBtn">Entrar</button>
+</div>
+
+<header class="top">
+  <div class="eyebrow">Reto Detox · Sep 2026</div>
+  <h1 class="greet">Hola, Pablo</h1>
+  <div class="sub-date" id="subDate">—</div>
+  <div class="sync-status" id="syncStatus">Cargando…</div>
+</header>
+
+<!-- ===================== HOY ===================== -->
+<section class="view on" id="view-hoy">
+<main class="view-pad">
+
+  <div class="card prestart" id="prestartCard" hidden>
+    <span class="badge">Antes de empezar</span>
+    <p id="prestartText"></p>
+  </div>
+
+  <div class="card" id="todayCard">
+    <div class="daybar-wrap">
+      <div class="daybar"><i id="dayBarFill" style="width:0%"></i></div>
+      <span class="daybar-num" id="dayBarNum">0 / 10</span>
+    </div>
+    <div class="note" id="dayNote">Marca cada cosa cuando la hagas. Toca una comida para ver la receta con gramos.</div>
+  </div>
+
+  <div class="card">
+    <h2>Al despertar <span class="hint">— los 3 juntos, sin dejar pasar tiempo</span></h2>
+    <div id="ritualRows"></div>
+  </div>
+
+  <div class="card">
+    <h2>Comidas del día</h2>
+    <div id="mealRows"></div>
+  </div>
+
+  <div class="card">
+    <h2>Agua <span class="hint">— 8 vasos = 2 litros</span></h2>
+    <div class="cups" id="cups"></div>
+    <div class="cups-label" id="cupsLabel">0 / 8 vasos</div>
+  </div>
+
+  <div class="card">
+    <h2>Hábitos del día</h2>
+    <div id="habitRows"></div>
+  </div>
+
+  <div class="card">
+    <h2>¿Cómo me sentí hoy? <span class="hint">— opcional, 1 = nada · 5 = mucho</span></h2>
+    <div id="feelRows"></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="border:none;padding:6px 4px">
+      <div class="check" id="cheatCheck"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="body">
+        <div class="title">Hoy hice mi cheat meal</div>
+        <div class="meta">Máximo 1 por semana, de preferencia domingo a la hora de la comida. Solo esa comida.</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+</section>
+
+<!-- ===================== PROGRESO ===================== -->
+<section class="view" id="view-progreso">
+<main class="view-pad">
+
+  <div class="stats-strip">
+    <div class="stat-pill"><div class="n" id="stRacha">0</div><div class="l">Racha (días)</div></div>
+    <div class="stat-pill"><div class="n" id="stAdh">0%</div><div class="l">Cumplimiento</div></div>
+    <div class="stat-pill"><div class="n" id="stDias">0</div><div class="l">Días del reto</div></div>
+  </div>
+
+  <div class="card">
+    <h2>Peso</h2>
+    <div class="field">
+      <div class="col"><label for="wDate">Fecha</label><input type="date" id="wDate"></div>
+      <div class="col"><label for="wKg">Kilos</label><input type="number" id="wKg" inputmode="decimal" step="0.1" placeholder="Ej. 82.4"></div>
+      <button class="btn" id="wSave">Guardar</button>
+    </div>
+    <div class="chart-box"><canvas id="wChart"></canvas></div>
+    <ul class="hist" id="wHist"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Medidas <span class="hint">— en cm, las que quieras</span></h2>
+    <div class="field">
+      <div class="col"><label for="mDate">Fecha</label><input type="date" id="mDate"></div>
+      <div class="col"><label for="mCintura">Cintura</label><input type="number" id="mCintura" inputmode="decimal" step="0.5" placeholder="cm"></div>
+      <div class="col"><label for="mAbdomen">Abdomen</label><input type="number" id="mAbdomen" inputmode="decimal" step="0.5" placeholder="cm"></div>
+    </div>
+    <div class="field">
+      <div class="col"><label for="mPecho">Pecho</label><input type="number" id="mPecho" inputmode="decimal" step="0.5" placeholder="cm"></div>
+      <div class="col"><label for="mBrazo">Brazo</label><input type="number" id="mBrazo" inputmode="decimal" step="0.5" placeholder="cm"></div>
+      <div class="col"><label for="mPierna">Pierna</label><input type="number" id="mPierna" inputmode="decimal" step="0.5" placeholder="cm"></div>
+      <button class="btn" id="mSave">Guardar</button>
+    </div>
+    <div class="chart-box"><canvas id="mChart"></canvas></div>
+    <ul class="hist" id="mHist"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Cómo me he sentido</h2>
+    <div class="chart-box"><canvas id="fChart"></canvas></div>
+    <div class="note">Energía y digestión: entre más alto, mejor. Hambre y antojos: entre más bajo, mejor (quiere decir que el plan te está llenando).</div>
+  </div>
+
+</main>
+</section>
+
+<!-- ===================== SÚPER ===================== -->
+<section class="view" id="view-super">
+<main class="view-pad">
+
+  <div class="card">
+    <h2>Prep del domingo <span class="hint">— hazlo una vez y ya tienes la semana</span></h2>
+    <div id="prepRows"></div>
+    <button class="btn ghost wide" id="prepReset" style="margin-top:10px">Reiniciar para el próximo domingo</button>
+  </div>
+
+  <div class="card">
+    <h2>Lista del súper <span class="hint">— para 1 semana</span></h2>
+    <div id="shopList"></div>
+    <button class="btn ghost wide" id="shopReset" style="margin-top:12px">Reiniciar lista</button>
+    <div class="note">Las cantidades son para ti solo. Si algo no lo encuentras o no te gusta, cámbialo con la pestaña de Equivalencias.</div>
+  </div>
+
+  <div class="card">
+    <h2>Recipientes y equipo</h2>
+    <div id="gearList"></div>
+  </div>
+
+</main>
+</section>
+
+<!-- ===================== EQUIVALENCIAS ===================== -->
+<section class="view" id="view-eq">
+<main class="view-pad">
+
+  <div class="card">
+    <h2>Cómo usar las equivalencias</h2>
+    <div class="note" style="margin-top:0">
+      Si un alimento del plan no lo tienes, no te gusta o no lo encuentras, cámbialo por
+      <b>otro del mismo grupo</b>, en la cantidad exacta que dice aquí. Ejemplo: si toca
+      ½ plátano y no tienes, ½ plátano = 1 porción de fruta = 1 manzana = 10 fresas.
+      Revisa siempre la cantidad.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Tu día en números</h2>
+    <table class="eq">
+      <tr><td>Cereales</td><td>6 porciones</td></tr>
+      <tr><td>Proteína animal</td><td>9 porciones</td></tr>
+      <tr><td>Grasa sin proteína</td><td>3 porciones</td></tr>
+      <tr><td>Grasa con proteína</td><td>1 porción</td></tr>
+      <tr><td>Fruta</td><td>2 a 3 porciones</td></tr>
+      <tr><td>Lácteo</td><td>1.5 porciones</td></tr>
+      <tr><td>Verduras</td><td>libres, muchas</td></tr>
+    </table>
+    <div class="note">Esto es lo que marcó Melissa para pérdida de grasa. El plan simple de la pestaña Hoy ya cae en estos números.</div>
+  </div>
+
+  <div id="eqAccordions"></div>
+
+</main>
+</section>
+
+<nav class="tabs">
+  <button data-tab="hoy" class="on">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+    Hoy
+  </button>
+  <button data-tab="progreso">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-6"/></svg>
+    Progreso
+  </button>
+  <button data-tab="super">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h15l-1.5 9h-12z"/><circle cx="9" cy="20" r="1"/><circle cx="18" cy="20" r="1"/><path d="M6 6L5 3H2"/></svg>
+    Súper
+  </button>
+  <button data-tab="eq">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8h10M7 12h10M7 16h6"/><rect x="3" y="4" width="18" height="16" rx="2"/></svg>
+    Equival.
+  </button>
+</nav>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ constantes del reto ============ */
+var START = "2026-09-07";
+var END   = "2026-09-30"; // inclusivo
+function parseYmd(s){ var p=s.split("-"); return new Date(+p[0], +p[1]-1, +p[2], 12,0,0,0); }
+function ymd(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function addDays(d,n){ var x=new Date(d.getTime()); x.setDate(x.getDate()+n); return x; }
+function daysBetween(a,b){ return Math.round((parseYmd(b)-parseYmd(a))/86400000); }
+var TOTAL_DAYS = daysBetween(START, END) + 1; // 24
+
+var MESES = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+var DIAS  = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+function prettyDate(d){ var s = DIAS[d.getDay()]+", "+d.getDate()+" de "+MESES[d.getMonth()]; return s.charAt(0).toUpperCase()+s.slice(1); }
+
+var todayStr = ymd(new Date());
+
+/* ============ plan de comidas (fijo) ============ */
+var RITUAL = [
+  { key:"aguaLimon", title:"Agua con ½ limón", meta:"1 vaso de agua natural con el jugo de ½ limón, apenas despiertas." },
+  { key:"jugoVerde", title:"Jugo verde", meta:"1 bolsa del congelador + 1 vaso de agua + jugo de 1 limón, a la licuadora. Tómalo justo antes del desayuno." }
+];
+
+var MEALS = [
+  {
+    key:"desayuno", title:"Desayuno", name:"Avena con huevos",
+    ing:[
+      "Avena 60 g (se pesa CRUDA, sin cocer)",
+      "Agua, o 150 ml de leche de avena sin azúcar",
+      "Canela al gusto",
+      "½ plátano en rodajas (o 100 g de otra fruta)",
+      "Crema de cacahuate 15 g (1 cucharada rasa)",
+      "1 huevo entero + 4 claras (aprox. 120 g de claras de bote)",
+      "Una pizca de sal"
+    ],
+    steps:[
+      "Pon la avena con el agua o la leche en un traste. Micro 2 min, o hierve 3 min en olla. Muévela.",
+      "Encima: el plátano en rodajas, la canela y la cucharada de crema de cacahuate.",
+      "Aparte, en un sartén antiadherente SIN aceite, revuelve el huevo con las 4 claras y la pizca de sal."
+    ],
+    tally:"2 cereales + 1 fruta + 3 proteína animal + 1 grasa con proteína"
+  },
+  {
+    key:"colacion1", title:"Colación 1", name:"Yogurt con fruta",
+    ing:[
+      "Yogurt griego natural SIN azúcar 190 g",
+      "Fruta 100 g (½ taza de fresas, o 10 uvas, o 1 manzana picada)",
+      "Canela"
+    ],
+    steps:[ "Mezcla todo en un vaso. Listo." ],
+    tally:"1.5 lácteo + 0.5 fruta"
+  },
+  {
+    key:"comida", title:"Comida", name:"Bowl de pollo con arroz",
+    ing:[
+      "Pollo 120 g (se pesa CRUDO — ya viene pesado en tu tupper del domingo)",
+      "Arroz 100 g YA COCIDO (también del tupper del domingo)",
+      "Verduras libres, todas las que quieras: lechuga, pepino, jitomate, espinaca, zanahoria",
+      "¼ de aguacate (aprox. 50 g)",
+      "5 aceitunas",
+      "Limón, sal y salsa al gusto"
+    ],
+    steps:[
+      "Saca 1 tupper de pollo con arroz. Caliéntalo 2 min si quieres.",
+      "Ponle encima muchas verduras crudas picadas, el aguacate y las aceitunas.",
+      "Exprime limón, agrega sal y salsa."
+    ],
+    swap:"Para no aburrirte, cambia la salsa cada día: lunes salsa mexicana (jitomate + cebolla + chile), martes salsa de soya (2 cdas) + pepino, miércoles chipotle… y repites.",
+    tally:"2 cereales + 3 proteína animal + 2 grasa sin proteína"
+  },
+  {
+    key:"colacion2", title:"Colación 2", name:"Fruta + bastones",
+    ing:[
+      "1 manzana o 1 plátano",
+      "Jícama y pepino en bastones con limón, sal y tajín (libre, lo que quieras)"
+    ],
+    steps:[ "Pícalo y cómelo a media tarde para no llegar con hambre a la cena." ],
+    tally:"1 fruta"
+  },
+  {
+    key:"cena", title:"Cena", name:"", // se llena según A/B
+    variants:{
+      A:{
+        name:"Atún con tostadas",
+        ing:[
+          "Atún en agua 120 g ya escurrido (más o menos 1 lata y media, escúrrelo bien)",
+          "2 tostadas horneadas (Sanissimo), o 1 pan integral",
+          "Lechuga, jitomate y cebolla",
+          "¼ de aguacate",
+          "Limón y sal"
+        ],
+        steps:[
+          "Escurre bien el atún y mézclalo con limón y sal.",
+          "Ponlo sobre las tostadas con la verdura picada y el aguacate."
+        ],
+        tally:"~1.5 cereal + 3 proteína animal + 1 grasa sin proteína"
+      },
+      B:{
+        name:"Huevos a la mexicana",
+        ing:[
+          "1 huevo + 4 claras",
+          "Jitomate, cebolla y chile picados",
+          "2 tortillas de maíz",
+          "¼ de aguacate"
+        ],
+        steps:[
+          "En un sartén sin aceite acitrona el jitomate, la cebolla y el chile.",
+          "Agrega el huevo con las 4 claras y revuelve.",
+          "Sirve con las 2 tortillas calientes y el aguacate."
+        ],
+        tally:"2 cereales + 3 proteína animal + 1 grasa sin proteína"
+      }
+    }
+  }
+];
+
+var HABITS = [
+  { key:"caminata", title:"Caminar 30 min", meta:"Tu entrenamiento normal de pádel o gym también cuenta." },
+  { key:"dormir",   title:"Dormir 7 a 8 horas", meta:"Márcalo en la mañana, pensando en la noche anterior." }
+];
+
+var FEELINGS = [
+  { key:"energia",   fl:"Energía",   fh:"1 = arrastrándome · 5 = con pila todo el día" },
+  { key:"hambre",    fl:"Hambre",    fh:"1 = lleno y a gusto · 5 = con hambre todo el día" },
+  { key:"antojos",   fl:"Antojos",   fh:"1 = ninguno · 5 = muchas ganas de dulce/harina" },
+  { key:"digestion", fl:"Digestión", fh:"1 = pesado / inflado · 5 = ligero y al baño bien" }
+];
+
+/* cena A o B por día: impar = A, par = B */
+function cenaDefaultFor(dayNum){ return (dayNum % 2 === 1) ? "A" : "B"; }
+
+/* ============ prep del domingo ============ */
+var PREP = [
+  "Pesa 600 g de pechuga de pollo CRUDA. Hiérvela con ½ cebolla, 2 dientes de ajo y sal, 35–40 min (u olla exprés 15 min). Deshébrala.",
+  "Enjuaga 1 taza (200 g) de arroz crudo. Cuécelo con 2 tazas de agua y sal, 15–18 min. Sale como 600 g cocido.",
+  "Divide el pollo y el arroz en 5 tuppers iguales, a ojo (no vuelvas a pesar). Son tus 5 comidas de lunes a viernes.",
+  "Jugo verde: lava y pica apio, pepino, nopal, piña (o manzana), espinaca y un trozo de jengibre. Reparte poquito en 10–12 bolsitas ziploc y congélalas.",
+  "Lava lechuga y espinaca; pica pepino, jitomate y zanahoria. Guárdalos en tuppers con una servilleta adentro (duran 4–5 días).",
+  "Corta jícama y pepino en bastones para las colaciones. Opcional: cuece 4–5 huevos duros por si un día te da flojera batir claras."
+];
+
+/* ============ lista del súper ============ */
+var SHOP = [
+  ["Proteína", [
+    ["Pechuga de pollo","600 g (+ extra si vas a cenar pollo)"],
+    ["Huevos","1 docena"],
+    ["Claras de huevo (bote)","1"],
+    ["Atún en agua","6 latas"]
+  ]],
+  ["Cereales", [
+    ["Avena","1 bolsa de 1 kg"],
+    ["Arroz","1 kg"],
+    ["Tortillas de maíz","1 paquete"],
+    ["Tostadas horneadas o pan integral cero cero","1 paquete"]
+  ]],
+  ["Fruta", [
+    ["Plátano","1 kg (≈ 7–8)"],
+    ["Manzana","7 piezas"],
+    ["Fruta de temporada barata (fresa / papaya / sandía)","1 kg"]
+  ]],
+  ["Lácteo", [
+    ["Yogurt griego natural SIN azúcar","1.4 L (2 botes grandes)"]
+  ]],
+  ["Grasas", [
+    ["Aguacate","6 piezas"],
+    ["Crema de cacahuate sin azúcar","1 bote (dura semanas)"],
+    ["Aceitunas","1 frasco chico"],
+    ["Aceite de oliva","1 botella (dura meses)"]
+  ]],
+  ["Verduras", [
+    ["Lechuga","1"],
+    ["Espinaca","1 manojo"],
+    ["Pepino","5"],
+    ["Jitomate","½ kg"],
+    ["Cebolla","2"],
+    ["Zanahoria","3"],
+    ["Chile serrano","unos pocos"],
+    ["Jícama","1"]
+  ]],
+  ["Para el jugo verde", [
+    ["Apio","1 manojo"],
+    ["Nopal","4"],
+    ["Piña","1 (o usa manzana)"],
+    ["Jengibre","1 trozo"]
+  ]],
+  ["Despensa / libre", [
+    ["Limón","1 kg (se usan un montón)"],
+    ["Canela molida","1"],
+    ["Sal, café, tajín, salsa (Valentina o soya)","lo que te falte"]
+  ]]
+];
+
+var GEAR = [
+  ["Báscula de cocina digital","Para pesar avena, pollo crudo y arroz cocido. Es la más importante.", true],
+  ["Tazas y cucharas medidoras","Para líquidos, yogurt, crema de cacahuate.", true],
+  ["5–6 tuppers medianos","Para las comidas. De vidrio si puedes (aguantan micro).", true],
+  ["1–2 tuppers grandes","Para el arroz y la verdura lavada.", true],
+  ["Bolsitas ziploc chicas","1 caja, para congelar el jugo verde.", true],
+  ["Botella o termo de 1 litro","Llénalo 2 veces al día = tus 2 litros de agua.", true],
+  ["Licuadora","Para el jugo verde. Seguro ya tienes.", false],
+  ["Sartén antiadherente","Para los huevos sin aceite. Seguro ya tienes.", false],
+  ["Olla / olla exprés","La olla exprés acelera mucho el pollo. Opcional.", false]
+];
+
+/* ============ equivalencias (de los PDF de Melissa) ============ */
+var EQ = [
+  ["Cereales — 1 porción", "table", [
+    ["Arroz (cocido)","50 g"],["Avena (cruda)","30 g"],["Quinoa","50 g"],["Pasta","½ taza"],
+    ["Tortilla de maíz o harina","1 pieza"],["Pan integral cero cero Bimbo","1 pieza"],
+    ["Pan Oroweat / Thins","½ pieza"],["Tostada Sanissimo","1 pieza"],["Salmas Sanissimo","1 paquete"],
+    ["Totopos","10 piezas"],["Rice cake","2 piezas"],["Amaranto","30 g"],["Obleas de amaranto","50 g"],
+    ["Elote","⅓ taza"],["Papa","⅓ pieza"],["Camote","⅓ pieza"],["Pan bolillo","⅓ pieza"]
+  ]],
+  ["Fruta — 1 porción", "table", [
+    ["Plátano, pera, toronja","½ pieza"],
+    ["Manzana, naranja, durazno, kiwi","1 pieza"],
+    ["Piña, melón, sandía, papaya, mamey","1 taza"],
+    ["Fresas, uvas","10 piezas"],
+    ["Berries, zarzamora, mango","1 taza"],
+    ["Guayaba, higo, ciruela, dátil","2 piezas"],
+    ["Granada","1 pieza"],
+    ["Pasas, arándano deshidratado","1/5 taza"],
+    ["Agua de coco","1 taza"]
+  ]],
+  ["Verduras", "text", "Libres, crudas o cocidas: lechuga, espinaca, jitomate, pepino, calabaza, brócoli, zanahoria, pimiento, cebolla, nopal, champiñón, chile, jícama… Puedes comerlas con libertad en el desayuno, comida y cena. Ojo: papa, elote y camote NO cuentan como verdura, cuentan como cereal."],
+  ["Leguminosas — 1 porción", "table", [
+    ["Frijol","½ taza"],["Lentejas","½ taza"],["Garbanzo","½ taza"],["Soya","½ taza"],
+    ["Tofu","100 g"],["Hummus","30 g"]
+  ]],
+  ["Proteína animal — 1 porción", "table", [
+    ["Pollo","40 g"],["Carne de res","40 g"],["Pescado","50 g"],["Atún o salmón","40 g"],
+    ["Camarón","40 g"],["Huevo","1 pieza o 2 claras"],["Atún en lata","½ lata (40 g)"],
+    ["Queso panela, oaxaca, fresco","40 g"],["Queso cottage","¼ taza"],["Jamón de pechuga de pavo","2 rebanadas"],
+    ["Pavo","50 g"],["Proteína en polvo","1 scoop = 3 porciones"]
+  ]],
+  ["Lácteos — 1 porción", "table", [
+    ["Yogurt griego natural","120 g (½ taza)"],
+    ["Leche descremada / deslactosada light","¾ taza"],
+    ["Leche Lala con proteína","1 taza"],
+    ["Yogurt natural sin azúcar (si no hay griego)","⅓ taza"]
+  ]],
+  ["Sustituto de lácteos — 1 porción", "table", [
+    ["Leche de coco sin azúcar","1 taza"],["Leche de almendra sin azúcar","1 taza"],
+    ["Leche de avena","1 taza"],["Yogurt de coco","120 g"]
+  ]],
+  ["Grasa sin proteína — 1 porción", "table", [
+    ["Aguacate","¼ pieza"],["Aceite de oliva","½ cucharada (7 ml)"],["Aceitunas","5 piezas"],
+    ["Mayonesa","1 cucharada"],["Ghee","1 cucharada"],["Coco rallado sin azúcar","1 cucharada"],
+    ["Aceite de coco","1 cucharadita"],["Chocolate amargo sin azúcar (Larín, Turín, Carlos V, Lindt)","1 pieza"]
+  ]],
+  ["Grasa con proteína — 1 porción", "table", [
+    ["Crema de cacahuate, almendra o avellana","1 cucharada"],["Almendra","10 piezas"],
+    ["Cacahuate","15 piezas"],["Nuez pecana","3 enteras o 6 mitades"],["Nuez de la india","6 mitades"],
+    ["Pistache","6 piezas"],["Ajonjolí","2 cucharadas"],["Chía o hemp","1 cucharada"],
+    ["Linaza","1 cucharada"],["Semillas de girasol","1 cucharada"],["Pepitas de calabaza","1 cucharada"]
+  ]],
+  ["Libre — sin límite", "text", "Agua mineral · café americano o espresso · tés e infusiones · limón · jamaica · jícama · pepino · especias y condimentos · vinagre blanco y de manzana · esencia de vainilla · chiles y jalapeños · cúrcuma, jengibre, spirulina · chicles sin azúcar · tajín · salsa huichol / tabasco / valentina · hierbas."],
+  ["Libre moderado", "table", [
+    ["Caldo de pollo, res o vegetal","2 tazas"],["Salsa de soya","2 cucharadas"],["Mostaza","1 cucharada"],
+    ["Catsup","1 cucharadita"],["Mermelada sin azúcar","1 cucharada"],["Vinagre balsámico","2 cucharadas"],
+    ["Puré de tomate","⅓ taza"],["Gelatina sin azúcar","2 tazas"],["Edulcorante","1 sobre"],
+    ["Leche vegetal sin azúcar","1 taza"],["Chamoy","30 ml"],["Cocoa","1 cucharadita"]
+  ]],
+  ["Reglas del reto", "list", [
+    "Toma mínimo 2 litros de agua al día.",
+    "Al despertar: agua con ½ limón, luego jugo verde, luego desayuno. Los 3 juntos, sin dejar horas entre uno y otro.",
+    "Evita al máximo: procesados, azúcar refinada, harinas blancas, alcohol.",
+    "Verduras libres en el desayuno, comida y cena (sin excederse, pero con libertad).",
+    "Café negro (americano o espresso): libre.",
+    "1 cheat meal a la semana como máximo, de preferencia domingo a la hora de la comida. Solo esa comida.",
+    "Muévete: mínimo 30 min de caminata al día (tu pádel o gym cuenta).",
+    "Duerme de 7 a 8 horas.",
+    "El sábado y domingo repites 2 de los menús de lunes a viernes que más te hayan gustado."
+  ]],
+  ["Marcas recomendadas del súper", "list", [
+    "Queso panela Lala Light · Queso Oaxaca Lala Light",
+    "Jocoque 0% grasa Libanius · Queso cottage Lyncott",
+    "Atún en agua Dolores",
+    "Yogurt griego sin azúcar Yoplait · Skyr Yoplait",
+    "Pan Bimbo Cero Cero · Cero Multigrano · Cero Cero Tostado",
+    "Pan Thins Oroweat",
+    "Salmas y Tostadas Sanissimo",
+    "Granola sin azúcar Dasavena",
+    "Leche de coco sin azúcar A de Coco",
+    "Leche de avena con vainilla sin azúcar Nature's Heart",
+    "Crema de cacahuate y de almendras Mister",
+    "Miel de maple light y gelatina light D'Gary",
+    "Claras de huevo San Juan · Huevos San Juan",
+    "Rice cake Okko · Avena Great Value · Moras congeladas Great Value",
+    "Aceite de oliva Carbonell · Pechuga de pavo San Rafael Balance"
+  ]]
+];
+
+/* ============ estado / almacenamiento ============ */
+var LS_ENTRIES = "detox.entries";
+var LS_PW = "detox.pw";
+var LS_SHOP = "detox.shop";     // solo local (check de lista del súper)
+var LS_PREP = "detox.prep";     // solo local
+var entries = [];
+var pw = "";
+var online = true;
+var pushTimer = null;
+
+function loadLocal(){
+  try{ entries = JSON.parse(localStorage.getItem(LS_ENTRIES) || "[]") || []; }catch(e){ entries = []; }
+  try{ pw = localStorage.getItem(LS_PW) || ""; }catch(e){ pw = ""; }
+}
+function saveLocal(){
+  try{ localStorage.setItem(LS_ENTRIES, JSON.stringify(entries)); }catch(e){}
+}
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+
+function mergeEntries(a, b){
+  var map = {};
+  var all = (a||[]).concat(b||[]);
+  for(var i=0;i<all.length;i++){
+    var e = all[i];
+    if(!e || !e.id) continue;
+    var prev = map[e.id];
+    if(!prev || (e.ts||0) >= (prev.ts||0)) map[e.id] = e;
+  }
+  var out = [];
+  for(var k in map){ if(map.hasOwnProperty(k)) out.push(map[k]); }
+  return out;
+}
+
+/* --- day entry helpers --- */
+function getDay(dateStr){
+  for(var i=0;i<entries.length;i++){
+    if(entries[i].type==="day" && entries[i].id==="day:"+dateStr) return entries[i];
+  }
+  return null;
+}
+function ensureDay(dateStr){
+  var d = getDay(dateStr);
+  if(!d){
+    d = { type:"day", id:"day:"+dateStr, date:dateStr, ts:Date.now(),
+          checks:{}, agua:0, feeling:{}, cheat:false, cena:null };
+    entries.push(d);
+  }
+  if(!d.checks) d.checks = {};
+  if(!d.feeling) d.feeling = {};
+  return d;
+}
+function touchDay(d){ d.ts = Date.now(); saveLocal(); schedulePush(); }
+
+function dayComplete(dateStr){
+  var d = getDay(dateStr);
+  if(!d || !d.checks) return false;
+  return d.checks.desayuno && d.checks.colacion1 && d.checks.comida && d.checks.colacion2 && d.checks.cena;
+}
+function dayScore(dateStr){
+  var d = getDay(dateStr);
+  if(!d) return 0;
+  var c = d.checks || {};
+  var items = ["aguaLimon","jugoVerde","desayuno","colacion1","comida","colacion2","cena","caminata","dormir"];
+  var n = 0;
+  for(var i=0;i<items.length;i++){ if(c[items[i]]) n++; }
+  if((d.agua||0) >= 8) n++; // 10º punto = agua completa
+  return n; // sobre 10
+}
+
+/* ============ sincronización ============ */
+function setSync(state, text){
+  var el = document.getElementById("syncStatus");
+  el.className = "sync-status " + (state||"");
+  el.textContent = text;
+}
+function apiGet(){
+  return fetch("api/data", { headers:{ "x-app-password": pw }, cache:"no-store" })
+    .then(function(r){
+      if(r.status===401){ throw { code:401 }; }
+      if(!r.ok) throw { code:r.status };
+      return r.json();
+    });
+}
+function apiPost(keepalive){
+  var opts = {
+    method:"POST",
+    headers:{ "Content-Type":"application/json", "x-app-password": pw },
+    body: JSON.stringify({ data: entries })
+  };
+  if(keepalive) opts.keepalive = true;
+  return fetch("api/data", opts).then(function(r){ if(!r.ok) throw { code:r.status }; return r.json(); });
+}
+function schedulePush(){
+  if(pushTimer) clearTimeout(pushTimer);
+  pushTimer = setTimeout(doPush, 400);
+}
+function doPush(keepalive){
+  if(!pw) return;
+  setSync("sync-syncing","Guardando…");
+  apiPost(keepalive).then(function(){
+    online = true;
+    setSync("sync-ok","Guardado y sincronizado");
+  }).catch(function(){
+    online = false;
+    setSync("sync-offline","Sin conexión — guardado solo aquí");
+  });
+}
+function initialSync(){
+  setSync("sync-syncing","Sincronizando…");
+  apiGet().then(function(res){
+    if(res && Array.isArray(res.data)){
+      entries = mergeEntries(entries, res.data);
+      saveLocal();
+    }
+    online = true;
+    setSync("sync-ok","Guardado y sincronizado");
+    renderAll();
+    // sube el merge por si el local tenía cosas nuevas
+    doPush();
+  }).catch(function(err){
+    if(err && err.code===401){
+      try{ localStorage.removeItem(LS_PW); }catch(e){}
+      pw = "";
+      showGate("La contraseña no funcionó. Intenta de nuevo.");
+      return;
+    }
+    online = false;
+    setSync("sync-offline","Sin conexión — guardado solo aquí");
+    renderAll();
+  });
+}
+
+document.addEventListener("visibilitychange", function(){
+  if(document.visibilityState === "hidden" && pw){ doPush(true); }
+});
+
+/* ============ password gate ============ */
+function showGate(msg){
+  var g = document.getElementById("gate");
+  g.hidden = false;
+  document.getElementById("gateErr").textContent = msg || "";
+  document.getElementById("gatePw").focus();
+}
+function hideGate(){ document.getElementById("gate").hidden = true; }
+document.getElementById("gateBtn").addEventListener("click", tryGate);
+document.getElementById("gatePw").addEventListener("keydown", function(e){ if(e.key==="Enter") tryGate(); });
+function tryGate(){
+  var val = document.getElementById("gatePw").value.trim();
+  if(!val) return;
+  pw = val;
+  document.getElementById("gateErr").textContent = "Probando…";
+  apiGet().then(function(res){
+    try{ localStorage.setItem(LS_PW, pw); }catch(e){}
+    hideGate();
+    if(res && Array.isArray(res.data)){ entries = mergeEntries(entries, res.data); saveLocal(); }
+    setSync("sync-ok","Guardado y sincronizado");
+    renderAll();
+    doPush();
+  }).catch(function(err){
+    if(err && err.code===401){ document.getElementById("gateErr").textContent = "Contraseña incorrecta."; }
+    else { document.getElementById("gateErr").textContent = "No se pudo conectar. Revisa tu internet."; }
+    pw = "";
+  });
+}
+
+/* ============ navegación tabs ============ */
+var tabBtns = document.querySelectorAll("nav.tabs button");
+for(var t=0;t<tabBtns.length;t++){
+  tabBtns[t].addEventListener("click", function(){
+    var tab = this.getAttribute("data-tab");
+    for(var i=0;i<tabBtns.length;i++) tabBtns[i].classList.toggle("on", tabBtns[i].getAttribute("data-tab")===tab);
+    var views = { hoy:"view-hoy", progreso:"view-progreso", super:"view-super", eq:"view-eq" };
+    for(var k in views){ if(views.hasOwnProperty(k)) document.getElementById(views[k]).classList.toggle("on", k===tab); }
+    window.scrollTo(0,0);
+    if(tab==="progreso") renderProgreso();
+  });
+}
+
+/* ============ checkbox svg ============ */
+function checkSvg(){ return '<svg viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
+
+/* ============ render: HOY ============ */
+function currentDayNum(){
+  if(todayStr < START) return 0;
+  if(todayStr > END) return TOTAL_DAYS + 1;
+  return daysBetween(START, todayStr) + 1;
+}
+
+function renderHoy(){
+  var d = new Date();
+  document.getElementById("subDate").textContent = prettyDate(d);
+
+  var dayNum = currentDayNum();
+  var pre = document.getElementById("prestartCard");
+  var preText = document.getElementById("prestartText");
+  var dayNote = document.getElementById("dayNote");
+
+  if(dayNum === 0){
+    pre.hidden = false;
+    var falta = daysBetween(todayStr, START);
+    preText.textContent = "El reto empieza el lunes 7 de septiembre. " +
+      (falta===1 ? "Falta 1 día." : "Faltan "+falta+" días.") +
+      " Aprovecha para hacer el súper y el prep del domingo. Puedes ir marcando tus hábitos desde hoy si quieres.";
+    dayNote.textContent = "Aún no empieza el reto, pero ya puedes practicar marcando el agua, la caminata y el sueño.";
+  } else if(dayNum > TOTAL_DAYS){
+    pre.hidden = false;
+    preText.textContent = "Terminaste el Reto Detox. Felicidades. Revisa tu progreso en la pestaña de al lado.";
+    dayNote.textContent = "El reto oficial terminó el 30 de septiembre. Si quieres, sigue usando el plan igual.";
+  } else {
+    pre.hidden = true;
+    dayNote.textContent = "Día " + dayNum + " de " + TOTAL_DAYS + ". Marca cada cosa cuando la hagas. Toca una comida para ver la receta.";
+  }
+
+  var dd = getDay(todayStr);
+  var score = dd ? dayScore(todayStr) : 0;
+  document.getElementById("dayBarNum").textContent = score + " / 10";
+  document.getElementById("dayBarFill").style.width = (score*10) + "%";
+
+  // ritual
+  var rr = document.getElementById("ritualRows");
+  rr.innerHTML = "";
+  RITUAL.forEach(function(item){ rr.appendChild(checkRow(item.key, item.title, item.meta)); });
+
+  // meals
+  var mr = document.getElementById("mealRows");
+  mr.innerHTML = "";
+  MEALS.forEach(function(m){ mr.appendChild(mealRow(m, dayNum)); });
+
+  // water
+  renderCups();
+
+  // habits
+  var hr = document.getElementById("habitRows");
+  hr.innerHTML = "";
+  HABITS.forEach(function(item){ hr.appendChild(checkRow(item.key, item.title, item.meta)); });
+
+  // feelings
+  var fr = document.getElementById("feelRows");
+  fr.innerHTML = "";
+  FEELINGS.forEach(function(f){ fr.appendChild(feelRow(f)); });
+
+  // cheat
+  var cc = document.getElementById("cheatCheck");
+  cc.classList.toggle("on", !!(dd && dd.cheat));
+  cc.onclick = function(){
+    var day = ensureDay(todayStr);
+    day.cheat = !day.cheat;
+    touchDay(day);
+    cc.classList.toggle("on", day.cheat);
+  };
+}
+
+function checkRow(key, title, meta){
+  var dd = getDay(todayStr);
+  var on = !!(dd && dd.checks && dd.checks[key]);
+  var row = document.createElement("div");
+  row.className = "row";
+  row.innerHTML =
+    '<div class="check '+(on?"on":"")+'">'+checkSvg()+'</div>' +
+    '<div class="body"><div class="title '+(on?"done":"")+'">'+title+'</div>' +
+    (meta?'<div class="meta">'+meta+'</div>':'') + '</div>';
+  var box = row.querySelector(".check");
+  box.addEventListener("click", function(){
+    var day = ensureDay(todayStr);
+    day.checks[key] = !day.checks[key];
+    touchDay(day);
+    renderHoy();
+  });
+  return row;
+}
+
+function mealRow(m, dayNum){
+  var dd = getDay(todayStr);
+  var on = !!(dd && dd.checks && dd.checks[m.key]);
+  var row = document.createElement("div");
+  row.className = "row";
+
+  var isCena = m.key === "cena";
+  var cenaVar = "A";
+  if(isCena){
+    cenaVar = (dd && dd.cena) ? dd.cena : cenaDefaultFor(dayNum>0 && dayNum<=TOTAL_DAYS ? dayNum : 1);
+  }
+  var data = isCena ? m.variants[cenaVar] : m;
+  var displayName = isCena ? (data.name + "  ·  opción " + cenaVar) : m.name;
+
+  row.innerHTML =
+    '<div class="check '+(on?"on":"")+'">'+checkSvg()+'</div>' +
+    '<div class="body">' +
+      '<div class="title '+(on?"done":"")+'">'+m.title+'</div>' +
+      '<div class="meta">'+displayName+'</div>' +
+      '<button class="expand-btn" type="button">Ver receta y gramos</button>' +
+      '<div class="recipe" hidden></div>' +
+    '</div>';
+
+  row.querySelector(".check").addEventListener("click", function(){
+    var day = ensureDay(todayStr);
+    day.checks[m.key] = !day.checks[m.key];
+    touchDay(day);
+    renderHoy();
+  });
+
+  var btn = row.querySelector(".expand-btn");
+  var box = row.querySelector(".recipe");
+  btn.addEventListener("click", function(){
+    if(box.hidden){
+      box.innerHTML = recipeHtml(m, isCena, cenaVar);
+      box.hidden = false;
+      btn.textContent = "Ocultar receta";
+      if(isCena){
+        var sw = box.querySelector(".cena-switch");
+        if(sw) sw.addEventListener("click", function(){
+          var day = ensureDay(todayStr);
+          day.cena = (cenaVar === "A") ? "B" : "A";
+          touchDay(day);
+          renderHoy();
+        });
+      }
+    } else {
+      box.hidden = true;
+      btn.textContent = "Ver receta y gramos";
+    }
+  });
+  return row;
+}
+
+function recipeHtml(m, isCena, cenaVar){
+  var data = isCena ? m.variants[cenaVar] : m;
+  var h = "<h4>" + (isCena ? data.name + " (opción " + cenaVar + ")" : m.name) + "</h4>";
+  h += "<ul>";
+  data.ing.forEach(function(x){ h += "<li>"+x+"</li>"; });
+  h += "</ul><ol>";
+  data.steps.forEach(function(x){ h += "<li>"+x+"</li>"; });
+  h += "</ol>";
+  if(m.swap) h += '<div class="swap">'+m.swap+'</div>';
+  h += '<div class="tally">Equivale a: '+data.tally+'</div>';
+  if(isCena){
+    var other = cenaVar === "A" ? "B — Huevos a la mexicana" : "A — Atún con tostadas";
+    h += '<button class="expand-btn cena-switch" type="button" style="padding-bottom:8px">Cambiar a la opción '+other+'</button>';
+  }
+  return h;
+}
+
+function renderCups(){
+  var dd = getDay(todayStr);
+  var n = dd ? (dd.agua||0) : 0;
+  var wrap = document.getElementById("cups");
+  wrap.innerHTML = "";
+  for(var i=0;i<8;i++){
+    (function(idx){
+      var c = document.createElement("button");
+      c.className = "cup" + (idx < n ? " on" : "");
+      c.setAttribute("aria-label", "Vaso " + (idx+1));
+      c.addEventListener("click", function(){
+        var day = ensureDay(todayStr);
+        // tocar el vaso i => si ya estaba lleno hasta ahí, baja a i; si no, sube a i+1
+        day.agua = (day.agua === idx+1) ? idx : idx+1;
+        if(day.agua < 0) day.agua = 0;
+        touchDay(day);
+        renderHoy();
+      });
+      wrap.appendChild(c);
+    })(i);
+  }
+  document.getElementById("cupsLabel").textContent = n + " / 8 vasos" + (n>=8 ? "  ·  ¡2 litros!" : "");
+}
+
+function feelRow(f){
+  var dd = getDay(todayStr);
+  var val = dd && dd.feeling ? dd.feeling[f.key] : null;
+  var row = document.createElement("div");
+  row.className = "feel-row";
+  var btns = "";
+  for(var i=1;i<=5;i++){ btns += '<button data-v="'+i+'" class="'+(val===i?"on":"")+'">'+i+'</button>'; }
+  row.innerHTML = '<div class="fl">'+f.fl+'</div><div class="fh">'+f.fh+'</div><div class="scale">'+btns+'</div>';
+  var scaleBtns = row.querySelectorAll(".scale button");
+  for(var j=0;j<scaleBtns.length;j++){
+    scaleBtns[j].addEventListener("click", function(){
+      var v = +this.getAttribute("data-v");
+      var day = ensureDay(todayStr);
+      if(!day.feeling) day.feeling = {};
+      day.feeling[f.key] = (day.feeling[f.key] === v) ? null : v;
+      touchDay(day);
+      renderHoy();
+    });
+  }
+  return row;
+}
+
+/* ============ render: PROGRESO ============ */
+var wChart=null, mChart=null, fChart=null;
+
+function startedDates(){
+  var out = [];
+  var last = todayStr < END ? todayStr : END;
+  if(todayStr < START) return out;
+  var cur = START;
+  while(cur <= last){
+    out.push(cur);
+    cur = ymd(addDays(parseYmd(cur), 1));
+  }
+  return out;
+}
+
+function computeStreak(){
+  if(todayStr < START) return 0;
+  var streak = 0;
+  var cur = todayStr < END ? todayStr : END;
+  // si hoy no está completo, empieza a contar desde ayer
+  if(!dayComplete(cur)) cur = ymd(addDays(parseYmd(cur), -1));
+  while(cur >= START){
+    if(dayComplete(cur)){ streak++; cur = ymd(addDays(parseYmd(cur), -1)); }
+    else break;
+  }
+  return streak;
+}
+
+function renderProgreso(){
+  var dates = startedDates();
+  document.getElementById("stRacha").textContent = computeStreak();
+  var dayNum = currentDayNum();
+  var shownDay = dayNum===0 ? 0 : Math.min(dayNum, TOTAL_DAYS);
+  document.getElementById("stDias").textContent = shownDay + " / " + TOTAL_DAYS;
+
+  if(dates.length){
+    var sum = 0;
+    for(var i=0;i<dates.length;i++) sum += dayScore(dates[i]);
+    var adh = Math.round((sum / (dates.length*10)) * 100);
+    document.getElementById("stAdh").textContent = adh + "%";
+  } else {
+    document.getElementById("stAdh").textContent = "—";
+  }
+
+  renderWeight();
+  renderMeasures();
+  renderFeelChart();
+}
+
+function typeEntries(type){
+  return entries.filter(function(e){ return e.type===type && !e.deleted; })
+    .sort(function(a,b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : 0); });
+}
+
+function renderWeight(){
+  var list = typeEntries("weight");
+  var labels = list.map(function(e){ return e.date.slice(5); });
+  var data = list.map(function(e){ return e.kg; });
+  if(wChart) wChart.destroy();
+  wChart = new Chart(document.getElementById("wChart"), {
+    type:"line",
+    data:{ labels:labels, datasets:[{ data:data, borderColor:"#12855A", backgroundColor:"rgba(18,133,90,.12)", fill:true, tension:.3, pointRadius:3 }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } },
+      scales:{ y:{ beginAtZero:false, ticks:{ font:{ size:11 } } }, x:{ ticks:{ font:{ size:10 } } } } }
+  });
+  var ul = document.getElementById("wHist");
+  ul.innerHTML = "";
+  list.slice().reverse().forEach(function(e){
+    var li = document.createElement("li");
+    li.innerHTML = '<span><b class="mono">'+e.kg+'</b> kg <span class="d">· '+e.date+'</span></span>' +
+                   '<button type="button">Borrar</button>';
+    li.querySelector("button").addEventListener("click", function(){
+      if(!confirm("¿Borrar este registro de peso?")) return;
+      markDeleted(e.id); renderProgreso();
+    });
+    ul.appendChild(li);
+  });
+}
+
+function renderMeasures(){
+  var list = typeEntries("measure");
+  var labels = list.map(function(e){ return e.date.slice(5); });
+  var fields = [["cintura","#12855A"],["abdomen","#0C6644"],["pecho","#B45309"],["brazo","#667069"],["pierna","#9AA39C"]];
+  var ds = fields.map(function(f){
+    return { label:f[0], data:list.map(function(e){ return e[f[0]]!=null ? e[f[0]] : null; }),
+      borderColor:f[1], backgroundColor:"transparent", tension:.3, pointRadius:2, spanGaps:true };
+  }).filter(function(d){ return d.data.some(function(v){ return v!=null; }); });
+  if(mChart) mChart.destroy();
+  mChart = new Chart(document.getElementById("mChart"), {
+    type:"line",
+    data:{ labels:labels, datasets:ds },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:true, labels:{ font:{ size:10 }, boxWidth:10 } } },
+      scales:{ y:{ beginAtZero:false, ticks:{ font:{ size:11 } } }, x:{ ticks:{ font:{ size:10 } } } } }
+  });
+  var ul = document.getElementById("mHist");
+  ul.innerHTML = "";
+  list.slice().reverse().forEach(function(e){
+    var parts = [];
+    ["cintura","abdomen","pecho","brazo","pierna"].forEach(function(k){ if(e[k]!=null) parts.push(k[0].toUpperCase()+": "+e[k]); });
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="d">'+e.date+' · '+parts.join("  ")+'</span><button type="button">Borrar</button>';
+    li.querySelector("button").addEventListener("click", function(){
+      if(!confirm("¿Borrar este registro de medidas?")) return;
+      markDeleted(e.id); renderProgreso();
+    });
+    ul.appendChild(li);
+  });
+}
+
+function renderFeelChart(){
+  var dates = startedDates();
+  var rows = dates.map(function(ds){ return getDay(ds); }).filter(function(d){ return d && d.feeling; });
+  var labels = rows.map(function(d){ return d.date.slice(5); });
+  var keys = [["energia","#12855A"],["hambre","#B45309"],["antojos","#D64328"],["digestion","#0C6644"]];
+  var ds = keys.map(function(k){
+    return { label:k[0], data:rows.map(function(d){ return d.feeling[k[0]]!=null ? d.feeling[k[0]] : null; }),
+      borderColor:k[1], backgroundColor:"transparent", tension:.3, pointRadius:2, spanGaps:true };
+  });
+  if(fChart) fChart.destroy();
+  fChart = new Chart(document.getElementById("fChart"), {
+    type:"line",
+    data:{ labels:labels, datasets:ds },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ display:true, labels:{ font:{ size:10 }, boxWidth:10 } } },
+      scales:{ y:{ min:0, max:5, ticks:{ stepSize:1, font:{ size:11 } } }, x:{ ticks:{ font:{ size:10 } } } } }
+  });
+}
+
+function markDeleted(id){
+  for(var i=0;i<entries.length;i++){
+    if(entries[i].id===id){ entries[i] = { id:id, type:entries[i].type, deleted:true, ts:Date.now() }; }
+  }
+  saveLocal(); schedulePush();
+}
+
+/* peso guardar */
+document.getElementById("wSave").addEventListener("click", function(){
+  var date = document.getElementById("wDate").value || todayStr;
+  var kg = parseFloat(document.getElementById("wKg").value);
+  if(isNaN(kg) || kg<=0){ alert("Escribe un peso válido."); return; }
+  entries.push({ type:"weight", id:uid(), date:date, kg:Math.round(kg*10)/10, ts:Date.now() });
+  saveLocal(); schedulePush();
+  document.getElementById("wKg").value = "";
+  renderProgreso();
+});
+
+/* medidas guardar */
+document.getElementById("mSave").addEventListener("click", function(){
+  var date = document.getElementById("mDate").value || todayStr;
+  var obj = { type:"measure", id:uid(), date:date, ts:Date.now() };
+  var any = false;
+  [["mCintura","cintura"],["mAbdomen","abdomen"],["mPecho","pecho"],["mBrazo","brazo"],["mPierna","pierna"]].forEach(function(p){
+    var v = parseFloat(document.getElementById(p[0]).value);
+    if(!isNaN(v) && v>0){ obj[p[1]] = Math.round(v*10)/10; any = true; }
+  });
+  if(!any){ alert("Escribe al menos una medida."); return; }
+  entries.push(obj);
+  saveLocal(); schedulePush();
+  ["mCintura","mAbdomen","mPecho","mBrazo","mPierna"].forEach(function(id){ document.getElementById(id).value=""; });
+  renderProgreso();
+});
+
+/* ============ render: SÚPER ============ */
+function loadCheckMap(key){ try{ return JSON.parse(localStorage.getItem(key)||"{}")||{}; }catch(e){ return {}; } }
+function saveCheckMap(key,map){ try{ localStorage.setItem(key, JSON.stringify(map)); }catch(e){} }
+
+function renderSuper(){
+  // prep
+  var prepMap = loadCheckMap(LS_PREP);
+  var pr = document.getElementById("prepRows");
+  pr.innerHTML = "";
+  PREP.forEach(function(text, idx){
+    var on = !!prepMap["p"+idx];
+    var row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = '<div class="check '+(on?"on":"")+'">'+checkSvg()+'</div>' +
+                    '<div class="body"><div class="title '+(on?"done":"")+'" style="font-weight:600;font-size:13.5px;line-height:1.5">'+text+'</div></div>';
+    row.querySelector(".check").addEventListener("click", function(){
+      prepMap["p"+idx] = !prepMap["p"+idx];
+      saveCheckMap(LS_PREP, prepMap);
+      renderSuper();
+    });
+    pr.appendChild(row);
+  });
+
+  // shop
+  var shopMap = loadCheckMap(LS_SHOP);
+  var sl = document.getElementById("shopList");
+  sl.innerHTML = "";
+  SHOP.forEach(function(group){
+    var cat = document.createElement("div");
+    cat.className = "shop-cat";
+    cat.textContent = group[0];
+    sl.appendChild(cat);
+    group[1].forEach(function(item){
+      var id = group[0]+"|"+item[0];
+      var on = !!shopMap[id];
+      var row = document.createElement("div");
+      row.className = "shop-item" + (on?" on":"");
+      row.innerHTML = '<div class="check '+(on?"on":"")+'">'+checkSvg()+'</div>' +
+                      '<div class="body"><div class="n">'+item[0]+'</div><div class="q">'+item[1]+'</div></div>';
+      row.querySelector(".check").addEventListener("click", function(){
+        shopMap[id] = !shopMap[id];
+        saveCheckMap(LS_SHOP, shopMap);
+        renderSuper();
+      });
+      sl.appendChild(row);
+    });
+  });
+
+  // gear
+  var gl = document.getElementById("gearList");
+  gl.innerHTML = "";
+  GEAR.forEach(function(g){
+    var row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = '<div class="body"><div class="title" style="font-size:14px">'+g[0]+
+                    (g[2]?' <span class="badge" style="font-size:9px;padding:2px 6px">necesario</span>':'')+
+                    '</div><div class="meta">'+g[1]+'</div></div>';
+    gl.appendChild(row);
+  });
+}
+
+document.getElementById("prepReset").addEventListener("click", function(){
+  if(!confirm("¿Reiniciar el prep del domingo? (solo desmarca la lista)")) return;
+  saveCheckMap(LS_PREP, {}); renderSuper();
+});
+document.getElementById("shopReset").addEventListener("click", function(){
+  if(!confirm("¿Reiniciar la lista del súper?")) return;
+  saveCheckMap(LS_SHOP, {}); renderSuper();
+});
+
+/* ============ render: EQUIVALENCIAS ============ */
+function renderEq(){
+  var wrap = document.getElementById("eqAccordions");
+  wrap.innerHTML = "";
+  EQ.forEach(function(sec){
+    var d = document.createElement("details");
+    d.className = "acc";
+    var body = "";
+    if(sec[1]==="table"){
+      body = '<table class="eq">';
+      sec[2].forEach(function(r){ body += "<tr><td>"+r[0]+"</td><td>"+r[1]+"</td></tr>"; });
+      body += "</table>";
+    } else if(sec[1]==="list"){
+      body = '<ul class="pill-list">';
+      sec[2].forEach(function(x){ body += "<li>"+x+"</li>"; });
+      body += "</ul>";
+    } else {
+      body = "<p>"+sec[2]+"</p>";
+    }
+    d.innerHTML = "<summary>"+sec[0]+"</summary><div class='acc-body'>"+body+"</div>";
+    wrap.appendChild(d);
+  });
+}
+
+/* ============ render all ============ */
+function renderAll(){
+  renderHoy();
+  renderSuper();
+  renderEq();
+  var wd = document.getElementById("wDate"); if(wd && !wd.value) wd.value = todayStr;
+  var md = document.getElementById("mDate"); if(md && !md.value) md.value = todayStr;
+}
+
+/* ============ arranque ============ */
+loadLocal();
+renderAll();
+if(!pw){
+  showGate();
+} else {
+  initialSync();
+}
+
+})();
+</script>
+</body>
+</html>
