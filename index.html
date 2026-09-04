@@ -227,7 +227,7 @@
   <input id="gatePw" type="password" inputmode="text" autocomplete="current-password" placeholder="Contraseña">
   <div class="err" id="gateErr"></div>
   <button class="btn" id="gateBtn">Entrar</button>
-  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v8</div>
+  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v9</div>
 </div>
 
 <header class="top">
@@ -258,6 +258,25 @@
     <h2>Al despertar <span class="hint">— los 3 juntos, sin dejar pasar tiempo</span></h2>
     <div id="ritualRows"></div>
   </div>
+
+  <details class="acc" id="morningCard" style="margin:0 0 14px">
+    <summary>Rutina de la mañana rápida — ¿a qué hora me levanto?</summary>
+    <div class="acc-body">
+      <p style="margin-top:0">Del "suena la alarma" a "mochila lista" son <b>~25 minutos</b>. Paso a paso:</p>
+      <div id="morningSteps"></div>
+      <div style="border-top:1px solid var(--border);margin:12px 0 0;padding-top:12px">
+        <p style="font-weight:800;margin:0 0 8px">Calcula tu alarma</p>
+        <div class="field">
+          <div class="col"><label for="mWork">Entro a trabajar a las</label><input type="time" id="mWork" value="09:00"></div>
+        </div>
+        <div class="field">
+          <div class="col"><label for="mCommute">Traslado (min)</label><input type="number" id="mCommute" inputmode="numeric" value="30"></div>
+          <div class="col"><label for="mReady">Bañarme/arreglarme (min)</label><input type="number" id="mReady" inputmode="numeric" value="30"></div>
+        </div>
+        <div id="mOut" class="note" style="font-size:13.5px;line-height:1.7;background:var(--green-soft);border-radius:10px;padding:12px;color:var(--ink)"></div>
+      </div>
+    </div>
+  </details>
 
   <div class="card">
     <h2>Comidas del día</h2>
@@ -580,6 +599,21 @@ var FEELINGS = [
 
 /* cena A o B por día: impar = A, par = B */
 function cenaDefaultFor(dayNum){ return (dayNum % 2 === 1) ? "A" : "B"; }
+
+/* ============ rutina de la mañana (minuto a minuto) ============ */
+var MORNING_STEPS = [
+  ["min 0", "Suena la alarma. Levántate y ve directo a la cocina."],
+  ["min 0–1", "Agua con ½ limón: llena un vaso (250 ml), exprime ½ limón, tómatelo de un jalón."],
+  ["min 1–3", "Jugo verde: saca 1 bolsa del congelador, ponla en la licuadora con 1 vaso de agua (250 ml) y el jugo de 1 limón. Licúa 40 segundos. Déjalo servido — NO te lo tomes todavía."],
+  ["min 3–4", "Avena: en un tazón pon 60 g de avena (6 cucharadas soperas) + 150 ml de agua o leche de avena. Al micro 2 minutos."],
+  ["min 4–6", "Mientras gira el micro: parte ½ plátano en rodajas. En un vaso rompe 1 huevo + 4 claras (120 ml del bote), échale una pizca de sal y bate con tenedor. Pon el sartén a fuego medio."],
+  ["min 6–7", "Saca la avena, muévela. Encima: el plátano, 1 cucharada (15 g) de crema de cacahuate y canela."],
+  ["min 7–10", "Echa el huevo al sartén caliente SIN aceite. Muévelo con la pala 2–3 minutos hasta que cuaje. Apaga."],
+  ["min 10–20", "Siéntate. Primero el jugo verde de un jalón, luego la avena y el huevo. Con calma."],
+  ["min 20–22", "Arma la mochila: 1 tupper de comida (de la hielera), 1 yogurt, 1 tupper de bastones, 2 frutas, botella de agua llena, 1 bolsita con aceitunas + ¼ de aguacate."],
+  ["min 22–25", "Deja el tazón, el vaso y el sartén remojando en el fregadero. Listo."]
+];
+var MORNING_KITCHEN_MIN = 25;
 
 /* ============ prep del domingo ============ */
 /* Total: ~1 h 20 min de trabajo tuyo. El pollo y el arroz se cuecen casi 1 hora
@@ -1500,10 +1534,63 @@ function renderEq(){
 /* ============ render all ============ */
 function renderAll(){
   renderHoy();
+  renderMorning();
   renderSuper();
   renderEq();
   var wd = document.getElementById("wDate"); if(wd && !wd.value) wd.value = todayStr;
   var md = document.getElementById("mDate"); if(md && !md.value) md.value = todayStr;
+}
+
+/* ============ rutina de la mañana ============ */
+var LS_MORNING = "detox.morning";
+var morningWired = false;
+function renderMorning(){
+  var box = document.getElementById("morningSteps");
+  if(box && !box.dataset.filled){
+    box.innerHTML = "";
+    MORNING_STEPS.forEach(function(s){
+      var row = document.createElement("div");
+      row.style.cssText = "padding:8px 0;border-top:1px solid var(--border)";
+      row.innerHTML = '<div style="font-weight:800;color:var(--green-dark);font-size:12px">'+s[0]+'</div>' +
+                      '<div style="font-size:13px;line-height:1.5">'+s[1]+'</div>';
+      box.appendChild(row);
+    });
+    box.dataset.filled = "1";
+  }
+  // valores guardados
+  var saved = {};
+  try{ saved = JSON.parse(localStorage.getItem(LS_MORNING) || "{}") || {}; }catch(e){}
+  if(saved.work) document.getElementById("mWork").value = saved.work;
+  if(saved.commute != null) document.getElementById("mCommute").value = saved.commute;
+  if(saved.ready != null) document.getElementById("mReady").value = saved.ready;
+  if(!morningWired){
+    ["mWork","mCommute","mReady"].forEach(function(id){
+      var el = document.getElementById(id);
+      if(el){ el.addEventListener("input", computeWake); el.addEventListener("change", computeWake); }
+    });
+    morningWired = true;
+  }
+  computeWake();
+}
+function computeWake(){
+  var out = document.getElementById("mOut");
+  if(!out) return;
+  var start = document.getElementById("mWork").value;
+  var commute = parseInt(document.getElementById("mCommute").value, 10);
+  var ready = parseInt(document.getElementById("mReady").value, 10);
+  if(!start || isNaN(commute) || isNaN(ready)){ out.textContent = "Llena los 3 datos de arriba."; return; }
+  var p = start.split(":");
+  var startMin = (+p[0])*60 + (+p[1]);
+  var leaveHome = startMin - commute;
+  var startReady = leaveHome - ready;
+  var wake = startReady - MORNING_KITCHEN_MIN;
+  function fmt(m){ m = ((m % 1440) + 1440) % 1440; var h = Math.floor(m/60), mm = m % 60; return (h<10?"0":"")+h+":"+(mm<10?"0":"")+mm; }
+  out.innerHTML =
+    'Pon tu alarma a las <b style="font-size:16px">'+fmt(wake)+'</b><br>' +
+    'Empieza a bañarte/arreglarte: <b>'+fmt(startReady)+'</b><br>' +
+    'Sal de casa: <b>'+fmt(leaveHome)+'</b><br>' +
+    '<span style="color:var(--ink-soft)">(25 min de cocina/desayuno + '+ready+' de arreglarte + '+commute+' de traslado)</span>';
+  try{ localStorage.setItem(LS_MORNING, JSON.stringify({ work:start, commute:commute, ready:ready })); }catch(e){}
 }
 
 /* ============ arranque ============ */
