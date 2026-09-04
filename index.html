@@ -206,10 +206,13 @@
   .view-pad{ padding-top:8px; }
 
   /* password gate */
+  [hidden]{ display:none !important; }
   .gate{
     position:fixed; inset:0; background:var(--bg); z-index:100; display:flex; flex-direction:column;
     align-items:center; justify-content:center; padding:24px; text-align:center;
+    overflow:auto;
   }
+  .gate[hidden]{ display:none !important; }
   .gate h2{ margin:0 0 6px; font-size:20px; }
   .gate p{ margin:0 0 18px; color:var(--ink-soft); font-size:14px; max-width:320px; }
   .gate input{ width:100%; max-width:280px; padding:13px 14px; border-radius:12px; border:1.5px solid var(--border); font-size:16px; margin-bottom:12px; }
@@ -224,7 +227,7 @@
   <input id="gatePw" type="password" inputmode="text" autocomplete="current-password" placeholder="Contraseña">
   <div class="err" id="gateErr"></div>
   <button class="btn" id="gateBtn">Entrar</button>
-  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v6</div>
+  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v7</div>
 </div>
 
 <header class="top">
@@ -875,10 +878,15 @@ document.addEventListener("visibilitychange", function(){
 function showGate(msg){
   var g = document.getElementById("gate");
   g.hidden = false;
+  g.style.display = "flex";
   document.getElementById("gateErr").textContent = msg || "";
-  document.getElementById("gatePw").focus();
+  try{ document.getElementById("gatePw").focus(); }catch(e){}
 }
-function hideGate(){ document.getElementById("gate").hidden = true; }
+function hideGate(){
+  var g = document.getElementById("gate");
+  g.hidden = true;
+  g.style.display = "none";
+}
 document.getElementById("gateBtn").addEventListener("click", function(){ tryGate(); });
 document.getElementById("gateBtn").addEventListener("touchend", function(e){ e.preventDefault(); tryGate(); });
 document.getElementById("gatePw").addEventListener("keydown", function(e){ if(e.key==="Enter" || e.keyCode===13) tryGate(); });
