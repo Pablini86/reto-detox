@@ -50,11 +50,11 @@
   .sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
   main{ max-width:480px; margin:0 auto; padding:0 16px; }
 
-  header.top{ padding:20px 16px 4px; max-width:480px; margin:0 auto; }
-  .eyebrow{ font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--ink-faint); text-transform:uppercase; margin-bottom:4px; }
-  h1.greet{ font-size:25px; font-weight:800; margin:0 0 2px; letter-spacing:-.01em; }
-  .sub-date{ font-size:14px; color:var(--ink-soft); margin-bottom:6px; }
-  .sync-status{ font-size:11.5px; font-weight:600; margin-bottom:16px; display:inline-flex; align-items:center; gap:5px; }
+  header.top{ padding:22px 16px 8px; max-width:480px; margin:0 auto; }
+  .eyebrow{ font-size:11px; font-weight:700; letter-spacing:.1em; color:var(--green-dark); text-transform:uppercase; margin-bottom:5px; }
+  h1.greet{ font-size:24px; font-weight:800; margin:0 0 3px; letter-spacing:-.015em; }
+  .sub-date{ font-size:13.5px; color:var(--ink-soft); margin-bottom:8px; }
+  .sync-status{ font-size:11px; font-weight:600; margin-bottom:16px; display:inline-flex; align-items:center; gap:5px; }
   .sync-status::before{ content:""; width:6px; height:6px; border-radius:50%; background:var(--ink-faint); }
   .sync-status.sync-ok{ color:var(--green); }
   .sync-status.sync-ok::before{ background:var(--green); }
@@ -68,20 +68,23 @@
   .badge.amber{ background:var(--amber-soft); color:var(--amber); }
 
   .card{
-    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-lg);
-    padding:16px; margin-bottom:14px; box-shadow:0 1px 2px rgba(20,23,26,.04);
+    background:var(--card); border:1px solid var(--border); border-radius:18px;
+    padding:16px 16px 14px; margin-bottom:12px; box-shadow:0 1px 2px rgba(20,23,26,.03);
   }
-  .card h2{ font-size:15px; font-weight:800; margin:0 0 12px; letter-spacing:.01em; }
-  .card h2 .hint{ font-weight:600; color:var(--ink-faint); font-size:12px; }
+  .card > h2{
+    font-size:12px; font-weight:800; margin:0 0 12px; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft);
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:6px;
+  }
+  .card > h2 .hint{ font-weight:600; color:var(--ink-faint); font-size:11px; letter-spacing:0; text-transform:none; }
 
   .prestart{ background:var(--green-soft); border-color:#C9E7D7; }
-  .prestart p{ margin:6px 0 0; font-size:13.5px; color:var(--green-dark); line-height:1.5; }
+  .prestart p{ margin:8px 0 0; font-size:13.5px; color:var(--green-dark); line-height:1.55; }
 
   /* progress bar */
-  .daybar-wrap{ display:flex; align-items:center; gap:10px; margin-bottom:4px; }
-  .daybar{ flex:1; height:10px; border-radius:6px; background:var(--bg); overflow:hidden; border:1px solid var(--border); }
-  .daybar > i{ display:block; height:100%; background:var(--green); border-radius:6px; transition:width .3s; }
-  .daybar-num{ font-size:13px; font-weight:800; color:var(--green-dark); }
+  .daybar-wrap{ display:flex; align-items:center; gap:12px; }
+  .daybar{ flex:1; height:12px; border-radius:20px; background:var(--bg); overflow:hidden; border:1px solid var(--border); }
+  .daybar > i{ display:block; height:100%; background:var(--green); border-radius:20px; transition:width .35s ease; }
+  .daybar-num{ font-size:13px; font-weight:800; color:var(--green-dark); white-space:nowrap; }
 
   /* checklist rows */
   .row{
@@ -98,13 +101,13 @@
   .row .body{ flex:1; min-width:0; }
   .row .title{ font-size:14.5px; font-weight:700; }
   .row .title.done{ color:var(--ink-faint); text-decoration:line-through; text-decoration-thickness:1px; }
-  .row .meta{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
-  .row .expand-btn{
-    background:none; border:none; color:var(--green-dark); font-size:12.5px; font-weight:700; padding:6px 0 0; cursor:pointer;
+  .row .meta{ font-size:12.5px; color:var(--ink-soft); margin-top:3px; line-height:1.45; }
+  .expand-btn{
+    background:none; border:none; color:var(--green-dark); font-size:12.5px; font-weight:700; padding:8px 0 2px; cursor:pointer; text-align:left;
   }
   .recipe{
-    margin-top:8px; background:var(--bg); border:1px solid var(--border); border-radius:var(--radius-sm);
-    padding:12px 12px 4px; font-size:13px; line-height:1.55;
+    margin-top:8px; background:var(--bg); border:1px solid var(--border); border-radius:12px;
+    padding:12px 12px 6px; font-size:13px; line-height:1.55;
   }
   .recipe h4{ margin:0 0 6px; font-size:13px; font-weight:800; }
   .recipe ul{ margin:0 0 8px; padding-left:18px; }
@@ -148,6 +151,8 @@
     font-size:15px; color:var(--ink);
   }
   .field .col{ flex:1; min-width:70px; }
+  .calc-out{ font-size:13.5px; line-height:1.7; background:var(--green-soft); border-radius:12px; padding:12px 14px; color:var(--ink); }
+  .calc-out b{ color:var(--green-dark); }
   button.btn{
     background:var(--green); color:#fff; border:none; padding:12px 16px; border-radius:10px;
     font-size:14px; font-weight:700; cursor:pointer;
@@ -227,7 +232,7 @@
   <input id="gatePw" type="password" inputmode="text" autocomplete="current-password" placeholder="Contraseña">
   <div class="err" id="gateErr"></div>
   <button class="btn" id="gateBtn">Entrar</button>
-  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v9</div>
+  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v10</div>
 </div>
 
 <header class="top">
@@ -247,53 +252,46 @@
   </div>
 
   <div class="card" id="todayCard">
+    <h2 id="dayLabel" style="margin-bottom:11px">Día — de 24</h2>
     <div class="daybar-wrap">
       <div class="daybar"><i id="dayBarFill" style="width:0%"></i></div>
       <span class="daybar-num" id="dayBarNum">0 / 10</span>
     </div>
-    <div class="note" id="dayNote">Marca cada cosa cuando la hagas. Toca una comida para ver la receta con gramos.</div>
   </div>
 
   <div class="card">
-    <h2>Al despertar <span class="hint">— los 3 juntos, sin dejar pasar tiempo</span></h2>
+    <h2>Al despertar <span class="hint">los 3 juntos, sin dejar pasar tiempo</span></h2>
     <div id="ritualRows"></div>
   </div>
 
-  <details class="acc" id="morningCard" style="margin:0 0 14px">
-    <summary>Rutina de la mañana rápida — ¿a qué hora me levanto?</summary>
-    <div class="acc-body">
-      <p style="margin-top:0">Del "suena la alarma" a "mochila lista" son <b>~25 minutos</b>. Paso a paso:</p>
-      <div id="morningSteps"></div>
-      <div style="border-top:1px solid var(--border);margin:12px 0 0;padding-top:12px">
-        <p style="font-weight:800;margin:0 0 8px">Calcula tu alarma</p>
-        <div class="field">
-          <div class="col"><label for="mWork">Entro a trabajar a las</label><input type="time" id="mWork" value="09:00"></div>
-        </div>
-        <div class="field">
-          <div class="col"><label for="mCommute">Traslado (min)</label><input type="number" id="mCommute" inputmode="numeric" value="30"></div>
-          <div class="col"><label for="mReady">Bañarme/arreglarme (min)</label><input type="number" id="mReady" inputmode="numeric" value="30"></div>
-        </div>
-        <div id="mOut" class="note" style="font-size:13.5px;line-height:1.7;background:var(--green-soft);border-radius:10px;padding:12px;color:var(--ink)"></div>
-      </div>
+  <div class="card" id="morningCard">
+    <h2>Rutina de la mañana <span class="hint">¿a qué hora me levanto?</span></h2>
+    <button class="expand-btn" id="morningToggle" type="button">Ver los 10 pasos minuto a minuto</button>
+    <div id="morningSteps" class="recipe" hidden></div>
+    <div class="field" style="margin-top:12px">
+      <div class="col"><label for="mWork">Entro a trabajar</label><input type="time" id="mWork" value="09:00"></div>
+      <div class="col"><label for="mCommute">Traslado (min)</label><input type="number" id="mCommute" inputmode="numeric" value="30"></div>
+      <div class="col"><label for="mReady">Arreglarme (min)</label><input type="number" id="mReady" inputmode="numeric" value="30"></div>
     </div>
-  </details>
+    <div id="mOut" class="calc-out"></div>
+  </div>
 
   <div class="card">
-    <h2>Comidas del día</h2>
+    <h2>Comidas del día <span class="hint">toca una para ver la receta</span></h2>
     <div id="mealRows"></div>
   </div>
 
   <div class="card" id="packCard">
-    <h2>Para llevar al trabajo <span class="hint">— ármalo antes de salir</span></h2>
+    <h2>Para llevar al trabajo <span class="hint">ármalo antes de salir</span></h2>
     <div id="packRows"></div>
-    <div class="row" style="border-top:1px solid var(--border);padding:12px 4px">
+    <div class="row" style="padding:12px 4px 4px">
       <div class="check" id="packCheck"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
       <div class="body"><div class="title">Ya armé mi mochila</div></div>
     </div>
   </div>
 
   <div class="card">
-    <h2>Agua <span class="hint">— 8 vasos = 2 litros</span></h2>
+    <h2>Agua <span class="hint">8 vasos = 2 litros</span></h2>
     <div class="cups" id="cups"></div>
     <div class="cups-label" id="cupsLabel">0 / 8 vasos</div>
   </div>
@@ -304,18 +302,8 @@
   </div>
 
   <div class="card">
-    <h2>¿Cómo me sentí hoy? <span class="hint">— opcional, 1 = nada · 5 = mucho</span></h2>
+    <h2>¿Cómo me sentí hoy? <span class="hint">opcional · 1 = nada · 5 = mucho</span></h2>
     <div id="feelRows"></div>
-  </div>
-
-  <div class="card">
-    <div class="row" style="border:none;padding:6px 4px">
-      <div class="check" id="cheatCheck"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="body">
-        <div class="title">Hoy hice mi cheat meal</div>
-        <div class="meta">Máximo 1 por semana, de preferencia domingo a la hora de la comida. Solo esa comida.</div>
-      </div>
-    </div>
   </div>
 
 </main>
@@ -521,15 +509,14 @@ var MEALS = [
     key:"comida", title:"Comida", name:"Bowl de pollo con arroz",
     ing:[
       "1 tupper de COMIDA del domingo (ya trae 120 g de pollo pesado en crudo + 100 g de arroz cocido + verdura)",
-      "¼ de aguacate (medio aguacate chico, partido a la mitad otra vez)",
-      "5 aceitunas",
+      "½ aguacate chico (aprox. 100 g)",
       "Más verdura cruda si quieres: pepino, jitomate, lechuga (libre)",
       "Limón, sal y salsa al gusto"
     ],
     steps:[
       "En la mañana mete el tupper de COMIDA a tu mochila (con hielera o bolsa térmica si puedes).",
       "En el trabajo: caliéntalo 2 min en el micro.",
-      "Encima ponle el aguacate en cubos, las 5 aceitunas y más verdura si tienes.",
+      "Encima ponle el ½ aguacate en cubos y más verdura si tienes.",
       "Exprime limón, sal y salsa."
     ],
     swap:"Para no aburrirte, cambia la salsa cada día: lunes salsa mexicana (jitomate + cebolla + chile), martes salsa de soya (2 cucharadas) + pepino, miércoles chipotle… y repites.",
@@ -652,9 +639,8 @@ var SHOP = [
     ["Yogurt griego natural SIN azúcar","1.4 L (2 botes grandes), O 12 yogures griegos individuales sin azúcar"]
   ]],
   ["Grasas", [
-    ["Aguacate","6 piezas chicas (medio por comida y medio por cena)"],
+    ["Aguacate","8 piezas chicas (½ en la comida + ¼ en la cena, cada día)"],
     ["Crema de cacahuate sin azúcar","1 bote (te dura 3 semanas)"],
-    ["Aceitunas","1 frasco chico"],
     ["Aceite de oliva","1 botella chica (te dura meses)"]
   ]],
   ["Verduras (ensaladas + cenas)", [
@@ -697,12 +683,12 @@ var GEAR = [
 
 /* ============ qué llevar al trabajo ============ */
 var PACK = [
-  "1 tupper de COMIDA (el que dice el día de hoy)",
+  "1 tupper de COMIDA (pollo + arroz)",
   "1 frasco o yogurt individual (colación 1)",
   "1 tupper de bastones de jícama y pepino (colación 2)",
   "2 frutas: una para cada colación",
-  "Tu botella de 1 litro llena",
-  "1 bolsita chica con aceitunas y ¼ de aguacate para la comida (o el aguacate entero y lo partes allá)"
+  "½ aguacate para la comida (o llévalo entero y lo partes allá)",
+  "Tu botella de 1 litro llena"
 ];
 
 /* ============ equivalencias (de los PDF de Melissa) ============ */
@@ -1032,22 +1018,22 @@ function renderHoy(){
   var dayNum = currentDayNum();
   var pre = document.getElementById("prestartCard");
   var preText = document.getElementById("prestartText");
-  var dayNote = document.getElementById("dayNote");
+  var dayLabel = document.getElementById("dayLabel");
 
   if(dayNum === 0){
     pre.hidden = false;
     var falta = daysBetween(todayStr, START);
     preText.textContent = "El reto empieza el lunes 7 de septiembre. " +
       (falta===1 ? "Falta 1 día." : "Faltan "+falta+" días.") +
-      " Aprovecha para hacer el súper y el prep del domingo. Puedes ir marcando tus hábitos desde hoy si quieres.";
-    dayNote.textContent = "Aún no empieza el reto, pero ya puedes practicar marcando el agua, la caminata y el sueño.";
+      " Aprovecha para hacer el súper y el prep del domingo.";
+    dayLabel.textContent = "Antes de empezar";
   } else if(dayNum > TOTAL_DAYS){
     pre.hidden = false;
     preText.textContent = "Terminaste el Reto Detox. Felicidades. Revisa tu progreso en la pestaña de al lado.";
-    dayNote.textContent = "El reto oficial terminó el 30 de septiembre. Si quieres, sigue usando el plan igual.";
+    dayLabel.textContent = "Reto terminado";
   } else {
     pre.hidden = true;
-    dayNote.textContent = "Día " + dayNum + " de " + TOTAL_DAYS + ". Marca cada cosa cuando la hagas. Toca una comida para ver la receta.";
+    dayLabel.textContent = "Día " + dayNum + " de " + TOTAL_DAYS;
   }
 
   var dd = getDay(todayStr);
@@ -1064,6 +1050,21 @@ function renderHoy(){
   var mr = document.getElementById("mealRows");
   mr.innerHTML = "";
   MEALS.forEach(function(m){ mr.appendChild(mealRow(m, dayNum)); });
+  // cheat meal (fila al final de las comidas)
+  var cheatOn = !!(dd && dd.cheat);
+  var cr = document.createElement("div");
+  cr.className = "row";
+  cr.innerHTML =
+    '<div class="check '+(cheatOn?"on":"")+'">'+checkSvg()+'</div>' +
+    '<div class="body"><div class="title '+(cheatOn?"done":"")+'">Cheat meal</div>' +
+    '<div class="meta">Máx. 1 por semana. Domingo a la hora de la comida, solo esa comida.</div></div>';
+  cr.querySelector(".check").addEventListener("click", function(){
+    var day = ensureDay(todayStr);
+    day.cheat = !day.cheat;
+    touchDay(day);
+    renderHoy();
+  });
+  mr.appendChild(cr);
 
   // para llevar al trabajo
   var pr = document.getElementById("packRows");
@@ -1096,16 +1097,6 @@ function renderHoy(){
   var fr = document.getElementById("feelRows");
   fr.innerHTML = "";
   FEELINGS.forEach(function(f){ fr.appendChild(feelRow(f)); });
-
-  // cheat
-  var cc = document.getElementById("cheatCheck");
-  cc.classList.toggle("on", !!(dd && dd.cheat));
-  cc.onclick = function(){
-    var day = ensureDay(todayStr);
-    day.cheat = !day.cheat;
-    touchDay(day);
-    cc.classList.toggle("on", day.cheat);
-  };
 }
 
 function checkRow(key, title, meta, recipe){
@@ -1548,14 +1539,22 @@ function renderMorning(){
   var box = document.getElementById("morningSteps");
   if(box && !box.dataset.filled){
     box.innerHTML = "";
-    MORNING_STEPS.forEach(function(s){
+    MORNING_STEPS.forEach(function(s, i){
       var row = document.createElement("div");
-      row.style.cssText = "padding:8px 0;border-top:1px solid var(--border)";
-      row.innerHTML = '<div style="font-weight:800;color:var(--green-dark);font-size:12px">'+s[0]+'</div>' +
-                      '<div style="font-size:13px;line-height:1.5">'+s[1]+'</div>';
+      row.style.cssText = "padding:8px 0" + (i ? ";border-top:1px solid var(--border)" : "");
+      row.innerHTML = '<div style="font-weight:800;color:var(--green-dark);font-size:11px;letter-spacing:.02em">'+s[0].toUpperCase()+'</div>' +
+                      '<div style="font-size:13px;line-height:1.5;margin-top:1px">'+s[1]+'</div>';
       box.appendChild(row);
     });
     box.dataset.filled = "1";
+  }
+  var mt = document.getElementById("morningToggle");
+  if(mt && !mt.dataset.wired){
+    mt.addEventListener("click", function(){
+      if(box.hidden){ box.hidden = false; mt.textContent = "Ocultar los pasos"; }
+      else { box.hidden = true; mt.textContent = "Ver los 10 pasos minuto a minuto"; }
+    });
+    mt.dataset.wired = "1";
   }
   // valores guardados
   var saved = {};
