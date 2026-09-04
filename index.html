@@ -227,7 +227,7 @@
   <input id="gatePw" type="password" inputmode="text" autocomplete="current-password" placeholder="Contraseña">
   <div class="err" id="gateErr"></div>
   <button class="btn" id="gateBtn">Entrar</button>
-  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v7</div>
+  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v8</div>
 </div>
 
 <header class="top">
@@ -262,6 +262,15 @@
   <div class="card">
     <h2>Comidas del día</h2>
     <div id="mealRows"></div>
+  </div>
+
+  <div class="card" id="packCard">
+    <h2>Para llevar al trabajo <span class="hint">— ármalo antes de salir</span></h2>
+    <div id="packRows"></div>
+    <div class="row" style="border-top:1px solid var(--border);padding:12px 4px">
+      <div class="check" id="packCheck"><svg viewBox="0 0 20 20" fill="none"><path d="M4 10l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="body"><div class="title">Ya armé mi mochila</div></div>
+    </div>
   </div>
 
   <div class="card">
@@ -438,8 +447,23 @@ var todayStr = ymd(new Date());
 
 /* ============ plan de comidas (fijo) ============ */
 var RITUAL = [
-  { key:"aguaLimon", title:"Agua con ½ limón", meta:"1 vaso de agua natural con el jugo de ½ limón, apenas despiertas." },
-  { key:"jugoVerde", title:"Jugo verde", meta:"1 bolsa del congelador + 1 vaso de agua + jugo de 1 limón, a la licuadora. Tómalo justo antes del desayuno." }
+  { key:"aguaLimon", title:"Agua con ½ limón", meta:"1 vaso (250 ml) de agua natural + el jugo de ½ limón. Apenas abres los ojos, antes que nada." },
+  { key:"jugoVerde", title:"Jugo verde", meta:"1 bolsa del congelador, licuada con agua y 1 limón. Toca para ver cómo.",
+    recipe:{
+      name:"Jugo verde de cada mañana",
+      ing:[
+        "1 bolsa de jugo verde del congelador (ya viene armada del domingo)",
+        "1 vaso de agua natural (250 ml)",
+        "El jugo de 1 limón entero"
+      ],
+      steps:[
+        "Saca 1 bolsa del congelador.",
+        "Vacía todo en la licuadora con el vaso de agua y el jugo del limón.",
+        "Licúa 30 a 40 segundos.",
+        "Tómatelo de volada, junto con el agua de limón y el desayuno. No dejes pasar tiempo entre los tres."
+      ]
+    }
+  }
 ];
 
 var MEALS = [
@@ -462,40 +486,47 @@ var MEALS = [
     tally:"2 cereales + 1 fruta + 3 proteína animal + 1 grasa con proteína"
   },
   {
-    key:"colacion1", title:"Colación 1", name:"Yogurt con fruta",
+    key:"colacion1", title:"Colación 1", name:"Yogurt con fruta (media mañana)",
     ing:[
-      "Yogurt griego natural SIN azúcar 190 g",
-      "Fruta 100 g (½ taza de fresas, o 10 uvas, o 1 manzana picada)",
-      "Canela"
+      "1 frasco de yogurt griego (190 g) con canela — ya lo dejaste listo el domingo. (O 1 yogurt griego individual sin azúcar de tienda.)",
+      "1 fruta entera: 10 fresas, o 10 uvas, o 1 manzana chica. Agárrala del frutero al salir."
     ],
-    steps:[ "Mezcla todo en un vaso. Listo." ],
+    steps:[
+      "En la mañana, antes de salir, mete a tu mochila: 1 frasco de yogurt + 1 fruta.",
+      "Si el yogurt no lleva la fruta adentro, te la comes aparte. No necesitas mezclar nada.",
+      "Te lo comes a media mañana en el trabajo (como a las 11)."
+    ],
     tally:"1.5 lácteo + 0.5 fruta"
   },
   {
     key:"comida", title:"Comida", name:"Bowl de pollo con arroz",
     ing:[
-      "Pollo 120 g (se pesa CRUDO — ya viene pesado en tu tupper del domingo)",
-      "Arroz 100 g YA COCIDO (también del tupper del domingo)",
-      "Verduras libres, todas las que quieras: lechuga, pepino, jitomate, espinaca, zanahoria",
-      "¼ de aguacate (aprox. 50 g)",
+      "1 tupper de COMIDA del domingo (ya trae 120 g de pollo pesado en crudo + 100 g de arroz cocido + verdura)",
+      "¼ de aguacate (medio aguacate chico, partido a la mitad otra vez)",
       "5 aceitunas",
+      "Más verdura cruda si quieres: pepino, jitomate, lechuga (libre)",
       "Limón, sal y salsa al gusto"
     ],
     steps:[
-      "Saca 1 tupper de pollo con arroz. Caliéntalo 2 min si quieres.",
-      "Ponle encima muchas verduras crudas picadas, el aguacate y las aceitunas.",
-      "Exprime limón, agrega sal y salsa."
+      "En la mañana mete el tupper de COMIDA a tu mochila (con hielera o bolsa térmica si puedes).",
+      "En el trabajo: caliéntalo 2 min en el micro.",
+      "Encima ponle el aguacate en cubos, las 5 aceitunas y más verdura si tienes.",
+      "Exprime limón, sal y salsa."
     ],
-    swap:"Para no aburrirte, cambia la salsa cada día: lunes salsa mexicana (jitomate + cebolla + chile), martes salsa de soya (2 cdas) + pepino, miércoles chipotle… y repites.",
+    swap:"Para no aburrirte, cambia la salsa cada día: lunes salsa mexicana (jitomate + cebolla + chile), martes salsa de soya (2 cucharadas) + pepino, miércoles chipotle… y repites.",
     tally:"2 cereales + 3 proteína animal + 2 grasa sin proteína"
   },
   {
-    key:"colacion2", title:"Colación 2", name:"Fruta + bastones",
+    key:"colacion2", title:"Colación 2", name:"Bastones + fruta (media tarde)",
     ing:[
-      "1 manzana o 1 plátano",
-      "Jícama y pepino en bastones con limón, sal y tajín (libre, lo que quieras)"
+      "1 tupper de bastones de jícama y pepino (150 g) — ya lo cortaste el domingo",
+      "1 fruta entera: 1 manzana o 1 plátano. Agárrala del frutero al salir.",
+      "Limón, sal y tajín aparte (opcional, es libre)"
     ],
-    steps:[ "Pícalo y cómelo a media tarde para no llegar con hambre a la cena." ],
+    steps:[
+      "En la mañana mete a tu mochila: 1 tupper de bastones + 1 fruta.",
+      "Te lo comes a media tarde (como a las 5) para no llegar con hambre a la cena."
+    ],
     tally:"1 fruta"
   },
   {
@@ -551,13 +582,17 @@ var FEELINGS = [
 function cenaDefaultFor(dayNum){ return (dayNum % 2 === 1) ? "A" : "B"; }
 
 /* ============ prep del domingo ============ */
+/* Total: ~1 h 20 min de trabajo tuyo. El pollo y el arroz se cuecen casi 1 hora
+   solos, sin que los cuides — ahí haces el jugo verde y las colaciones. */
+var PREP_INTRO = "En total son ~1 h 20 min de tu tiempo. Mientras el pollo y el arroz se cuecen (casi 1 hora sin que los cuides), vas haciendo el jugo verde y las colaciones. Empieza por el pollo (paso 1), luego el arroz (paso 2), y mientras se cuecen haz lo demás.";
 var PREP = [
-  "Pesa 600 g de pechuga de pollo CRUDA. Hiérvela con ½ cebolla, 2 dientes de ajo y sal, 35–40 min (u olla exprés 15 min). Deshébrala.",
-  "Enjuaga 1 taza (200 g) de arroz crudo. Cuécelo con 2 tazas de agua y sal, 15–18 min. Sale como 600 g cocido.",
-  "Divide el pollo y el arroz en 5 tuppers iguales, a ojo (no vuelvas a pesar). Son tus 5 comidas de lunes a viernes.",
-  "Jugo verde: lava y pica apio, pepino, nopal, piña (o manzana), espinaca y un trozo de jengibre. Reparte poquito en 10–12 bolsitas ziploc y congélalas.",
-  "Lava lechuga y espinaca; pica pepino, jitomate y zanahoria. Guárdalos en tuppers con una servilleta adentro (duran 4–5 días).",
-  "Corta jícama y pepino en bastones para las colaciones. Opcional: cuece 4–5 huevos duros por si un día te da flojera batir claras."
+  { t:"15 min tuyos + 40 min de cocción", text:"POLLO. Pesa 600 g de pechuga de pollo cruda. Ponla en una olla con agua que la cubra, ½ cebolla, 2 dientes de ajo y 1 cucharadita de sal. Tapa y hierve 40 min a fuego medio. Sácala, deja que enfríe 10 min y deshébrala con 2 tenedores.", video:"como deshebrar pollo facil" },
+  { t:"5 min tuyos + 18 min de cocción", text:"ARROZ. Enjuaga 1 taza (200 g) de arroz crudo hasta que el agua salga clara. Ponlo en una olla con 2 tazas (500 ml) de agua y ½ cucharadita de sal. Tapa, fuego bajo 18 min, apaga y NO destapes 5 min más. Sale como 600 g cocido.", video:"como hacer arroz blanco que no se bata" },
+  { t:"10 min", text:"ARMA LAS 5 COMIDAS. En 5 tuppers medianos pon en cada uno: 1 puño de pollo deshebrado + 6 cucharadas soperas de arroz + 1 puño de lechuga o espinaca. Etiqueta cada tupper: COMIDA LUN, MAR, MIÉ, JUE, VIE. El aguacate y las aceitunas NO se ponen ahora, se las agregas el día que te la comes." },
+  { t:"25 min", text:"JUGO VERDE, 10 BOLSAS. En cada bolsa ziploc chica mete: 1 tallo de apio en trozos de 2 cm + ⅓ de pepino en rodajas + ½ penca de nopal en cuadritos (sin espinas) + 1 rebanada de piña de 1 cm de grosor (o ½ manzana en cubos) + 1 puño de espinaca (unas 15 hojas) + 1 rodaja de jengibre del tamaño de una moneda de 1 peso. Cierra las 10 bolsas y al congelador." },
+  { t:"5 min", text:"COLACIÓN 1, 5 FRASCOS. En 5 frascos chicos pon en cada uno 190 g de yogurt griego + 1 pizca de canela. Tápalos. (Si te da flojera, compra 5 yogures griegos individuales sin azúcar y sáltate esto.)" },
+  { t:"10 min", text:"COLACIÓN 2, 5 TUPPERS. Corta 1 jícama y 3 pepinos en bastones. Repártelos en 5 tuppers chicos. Ponle a cada uno 1 cucharada de agua y tápalos para que no se resequen." },
+  { t:"5 min", text:"FRUTA. Deja 10 manzanas o plátanos en el frutero (no necesitan refri). Lava las fresas o uvas y guárdalas en 1 tupper en el refri. Cada mañana agarras 2 frutas: una para cada colación." }
 ];
 
 /* ============ lista del súper ============ */
@@ -575,52 +610,65 @@ var SHOP = [
     ["Tostadas horneadas o pan integral cero cero","1 paquete"]
   ]],
   ["Fruta", [
-    ["Plátano","1 kg (≈ 7–8)"],
-    ["Manzana","7 piezas"],
-    ["Fruta de temporada barata (fresa / papaya / sandía)","1 kg"]
+    ["Plátano","1 kg (unos 8)"],
+    ["Manzana","10 piezas (chicas)"],
+    ["Fresas o uvas","1 kg"]
   ]],
   ["Lácteo", [
-    ["Yogurt griego natural SIN azúcar","1.4 L (2 botes grandes)"]
+    ["Yogurt griego natural SIN azúcar","1.4 L (2 botes grandes), O 12 yogures griegos individuales sin azúcar"]
   ]],
   ["Grasas", [
-    ["Aguacate","6 piezas"],
-    ["Crema de cacahuate sin azúcar","1 bote (dura semanas)"],
+    ["Aguacate","6 piezas chicas (medio por comida y medio por cena)"],
+    ["Crema de cacahuate sin azúcar","1 bote (te dura 3 semanas)"],
     ["Aceitunas","1 frasco chico"],
-    ["Aceite de oliva","1 botella (dura meses)"]
+    ["Aceite de oliva","1 botella chica (te dura meses)"]
   ]],
-  ["Verduras", [
-    ["Lechuga","1"],
-    ["Espinaca","1 manojo"],
-    ["Pepino","5"],
+  ["Verduras (ensaladas + cenas)", [
+    ["Lechuga","1 pieza"],
+    ["Espinaca","1 bolsa de 300 g (te sirve para ensalada y para el jugo verde)"],
+    ["Pepino","7 piezas (3 para colación 2, 4 para el jugo verde)"],
     ["Jitomate","½ kg"],
-    ["Cebolla","2"],
-    ["Zanahoria","3"],
-    ["Chile serrano","unos pocos"],
-    ["Jícama","1"]
+    ["Cebolla","2 piezas"],
+    ["Zanahoria","3 piezas"],
+    ["Chile serrano","4 piezas"],
+    ["Jícama","1 pieza grande"]
   ]],
-  ["Para el jugo verde", [
-    ["Apio","1 manojo"],
-    ["Nopal","4"],
-    ["Piña","1 (o usa manzana)"],
-    ["Jengibre","1 trozo"]
+  ["Para el jugo verde (10 bolsas)", [
+    ["Apio","1 manojo (10 tallos)"],
+    ["Nopal","5 pencas (o 1 bolsa de nopal ya limpio en cuadritos)"],
+    ["Piña","1 chica (o usa 5 manzanas de las de arriba)"],
+    ["Jengibre","1 trozo de 10 cm"]
   ]],
   ["Despensa / libre", [
-    ["Limón","1 kg (se usan un montón)"],
-    ["Canela molida","1"],
+    ["Limón","1½ kg (usas 3–4 al día: mañana, jugo, comida, cena)"],
+    ["Canela molida","1 frasco"],
     ["Sal, café, tajín, salsa (Valentina o soya)","lo que te falte"]
   ]]
 ];
 
 var GEAR = [
-  ["Báscula de cocina digital","Para pesar avena, pollo crudo y arroz cocido. Es la más importante.", true],
-  ["Tazas y cucharas medidoras","Para líquidos, yogurt, crema de cacahuate.", true],
-  ["5–6 tuppers medianos","Para las comidas. De vidrio si puedes (aguantan micro).", true],
-  ["1–2 tuppers grandes","Para el arroz y la verdura lavada.", true],
-  ["Bolsitas ziploc chicas","1 caja, para congelar el jugo verde.", true],
-  ["Botella o termo de 1 litro","Llénalo 2 veces al día = tus 2 litros de agua.", true],
+  ["Báscula de cocina digital","La más importante. Para pesar la avena (60 g), el pollo crudo (600 g) y el arroz cocido. Cuesta $150–350.", true],
+  ["Tazas y cucharas medidoras","Para el agua, el yogurt, la crema de cacahuate. Cuesta $80–150.", true],
+  ["5 tuppers medianos","Para las 5 comidas de la semana (pollo + arroz). De vidrio si puedes, aguantan micro.", true],
+  ["5 tuppers chicos","Para la colación 2 (bastones de jícama y pepino).", true],
+  ["5 frascos chicos con tapa","Para la colación 1 (yogurt). Si compras yogures individuales, no los necesitas.", true],
+  ["1 tupper grande","Para la verdura de ensalada lavada y las fresas.", true],
+  ["1 caja de bolsitas ziploc chicas (20+)","Para congelar el jugo verde.", true],
+  ["Botella o termo de 1 litro","Lo llenas 2 veces al día = tus 2 litros de agua.", true],
+  ["Hielera chica o bolsa térmica","Para llevar el tupper de comida al trabajo sin que se eche a perder.", true],
   ["Licuadora","Para el jugo verde. Seguro ya tienes.", false],
   ["Sartén antiadherente","Para los huevos sin aceite. Seguro ya tienes.", false],
   ["Olla / olla exprés","La olla exprés acelera mucho el pollo. Opcional.", false]
+];
+
+/* ============ qué llevar al trabajo ============ */
+var PACK = [
+  "1 tupper de COMIDA (el que dice el día de hoy)",
+  "1 frasco o yogurt individual (colación 1)",
+  "1 tupper de bastones de jícama y pepino (colación 2)",
+  "2 frutas: una para cada colación",
+  "Tu botella de 1 litro llena",
+  "1 bolsita chica con aceitunas y ¼ de aguacate para la comida (o el aguacate entero y lo partes allá)"
 ];
 
 /* ============ equivalencias (de los PDF de Melissa) ============ */
@@ -976,12 +1024,31 @@ function renderHoy(){
   // ritual
   var rr = document.getElementById("ritualRows");
   rr.innerHTML = "";
-  RITUAL.forEach(function(item){ rr.appendChild(checkRow(item.key, item.title, item.meta)); });
+  RITUAL.forEach(function(item){ rr.appendChild(checkRow(item.key, item.title, item.meta, item.recipe)); });
 
   // meals
   var mr = document.getElementById("mealRows");
   mr.innerHTML = "";
   MEALS.forEach(function(m){ mr.appendChild(mealRow(m, dayNum)); });
+
+  // para llevar al trabajo
+  var pr = document.getElementById("packRows");
+  pr.innerHTML = "";
+  PACK.forEach(function(x){
+    var li = document.createElement("div");
+    li.className = "meta";
+    li.style.cssText = "padding:5px 0 5px 16px;position:relative";
+    li.innerHTML = '<span style="position:absolute;left:0">·</span>' + x;
+    pr.appendChild(li);
+  });
+  var pk = document.getElementById("packCheck");
+  pk.classList.toggle("on", !!(dd && dd.checks && dd.checks.mochila));
+  pk.onclick = function(){
+    var day = ensureDay(todayStr);
+    day.checks.mochila = !day.checks.mochila;
+    touchDay(day);
+    renderHoy();
+  };
 
   // water
   renderCups();
@@ -1007,7 +1074,7 @@ function renderHoy(){
   };
 }
 
-function checkRow(key, title, meta){
+function checkRow(key, title, meta, recipe){
   var dd = getDay(todayStr);
   var on = !!(dd && dd.checks && dd.checks[key]);
   var row = document.createElement("div");
@@ -1015,7 +1082,9 @@ function checkRow(key, title, meta){
   row.innerHTML =
     '<div class="check '+(on?"on":"")+'">'+checkSvg()+'</div>' +
     '<div class="body"><div class="title '+(on?"done":"")+'">'+title+'</div>' +
-    (meta?'<div class="meta">'+meta+'</div>':'') + '</div>';
+    (meta?'<div class="meta">'+meta+'</div>':'') +
+    (recipe?'<button class="expand-btn" type="button">Ver cómo se hace</button><div class="recipe" hidden></div>':'') +
+    '</div>';
   var box = row.querySelector(".check");
   box.addEventListener("click", function(){
     var day = ensureDay(todayStr);
@@ -1023,7 +1092,24 @@ function checkRow(key, title, meta){
     touchDay(day);
     renderHoy();
   });
+  if(recipe){
+    var btn = row.querySelector(".expand-btn");
+    var rbox = row.querySelector(".recipe");
+    btn.addEventListener("click", function(){
+      if(rbox.hidden){ rbox.innerHTML = simpleRecipeHtml(recipe); rbox.hidden = false; btn.textContent = "Ocultar"; }
+      else { rbox.hidden = true; btn.textContent = "Ver cómo se hace"; }
+    });
+  }
   return row;
+}
+
+function simpleRecipeHtml(r){
+  var h = "<h4>" + r.name + "</h4><ul>";
+  r.ing.forEach(function(x){ h += "<li>"+x+"</li>"; });
+  h += "</ul><ol>";
+  r.steps.forEach(function(x){ h += "<li>"+x+"</li>"; });
+  h += "</ol>";
+  return h;
 }
 
 function mealRow(m, dayNum){
@@ -1315,12 +1401,23 @@ function renderSuper(){
   var prepMap = loadCheckMap(LS_PREP);
   var pr = document.getElementById("prepRows");
   pr.innerHTML = "";
-  PREP.forEach(function(text, idx){
+  var intro = document.createElement("div");
+  intro.className = "note";
+  intro.style.cssText = "margin:0 0 6px";
+  intro.textContent = PREP_INTRO;
+  pr.appendChild(intro);
+  PREP.forEach(function(item, idx){
     var on = !!prepMap["p"+idx];
+    var vid = item.video
+      ? ' <a href="https://www.youtube.com/results?search_query=' + encodeURIComponent(item.video) + '" target="_blank" rel="noopener" style="color:var(--green-dark);font-weight:700;white-space:nowrap">▸ ver video</a>'
+      : '';
     var row = document.createElement("div");
     row.className = "row";
     row.innerHTML = '<div class="check '+(on?"on":"")+'">'+checkSvg()+'</div>' +
-                    '<div class="body"><div class="title '+(on?"done":"")+'" style="font-weight:600;font-size:13.5px;line-height:1.5">'+text+'</div></div>';
+                    '<div class="body">' +
+                      '<div class="meta" style="font-weight:800;color:var(--green-dark);margin-bottom:3px">' + item.t + vid + '</div>' +
+                      '<div class="title '+(on?"done":"")+'" style="font-weight:600;font-size:13.5px;line-height:1.5">'+item.text+'</div>' +
+                    '</div>';
     row.querySelector(".check").addEventListener("click", function(){
       prepMap["p"+idx] = !prepMap["p"+idx];
       saveCheckMap(LS_PREP, prepMap);
