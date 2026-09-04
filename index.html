@@ -224,7 +224,7 @@
   <input id="gatePw" type="password" inputmode="text" autocomplete="current-password" placeholder="Contraseña">
   <div class="err" id="gateErr"></div>
   <button class="btn" id="gateBtn">Entrar</button>
-  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v5</div>
+  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v6</div>
 </div>
 
 <header class="top">
@@ -879,18 +879,20 @@ function showGate(msg){
   document.getElementById("gatePw").focus();
 }
 function hideGate(){ document.getElementById("gate").hidden = true; }
-document.getElementById("gateBtn").addEventListener("click", tryGate);
-document.getElementById("gatePw").addEventListener("keydown", function(e){ if(e.key==="Enter") tryGate(); });
+document.getElementById("gateBtn").addEventListener("click", function(){ tryGate(); });
+document.getElementById("gateBtn").addEventListener("touchend", function(e){ e.preventDefault(); tryGate(); });
+document.getElementById("gatePw").addEventListener("keydown", function(e){ if(e.key==="Enter" || e.keyCode===13) tryGate(); });
 function tryGate(){
-  var val = document.getElementById("gatePw").value.trim();
-  if(!val) return;
+  var errEl = document.getElementById("gateErr");
+  var val = (document.getElementById("gatePw").value || "").trim();
+  if(!val){ errEl.textContent = "Escribe la contraseña primero."; return; }
   pw = val;
   try{ localStorage.setItem(LS_PW, pw); }catch(e){}
-  document.getElementById("gateErr").textContent = "";
+  errEl.textContent = "";
   // Entra de inmediato en modo local — no esperamos a la red para dejarte pasar.
   // La validación real de la contraseña y la sincronización van en segundo plano.
-  hideGate();
-  renderAll();
+  try{ hideGate(); renderAll(); }
+  catch(e3){ errEl.textContent = "Error al cargar: " + (e3 && e3.message ? e3.message : e3); showGate(errEl.textContent); return; }
   setSync("sync-syncing","Sincronizando…");
   apiGet().then(function(res){
     if(res && Array.isArray(res.data)){ entries = mergeEntries(entries, res.data); saveLocal(); }
