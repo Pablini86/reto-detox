@@ -224,7 +224,7 @@
   <input id="gatePw" type="password" inputmode="text" autocomplete="current-password" placeholder="Contraseña">
   <div class="err" id="gateErr"></div>
   <button class="btn" id="gateBtn">Entrar</button>
-  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v3</div>
+  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v4</div>
 </div>
 
 <header class="top">
@@ -875,22 +875,44 @@ function showGate(msg){
 function hideGate(){ document.getElementById("gate").hidden = true; }
 document.getElementById("gateBtn").addEventListener("click", tryGate);
 document.getElementById("gatePw").addEventListener("keydown", function(e){ if(e.key==="Enter") tryGate(); });
+var gateBusy = false;
 function tryGate(){
+  if(gateBusy) return;
   var val = document.getElementById("gatePw").value.trim();
   if(!val) return;
   pw = val;
-  document.getElementById("gateErr").textContent = "Probando…";
-  apiGet().then(function(res){
-    try{ localStorage.setItem(LS_PW, pw); }catch(e){}
-    hideGate();
-    if(res && Array.isArray(res.data)){ entries = mergeEntries(entries, res.data); saveLocal(); }
-    setSync("sync-ok","Guardado y sincronizado");
-    renderAll();
-    doPush();
-  }).catch(function(err){
-    if(err && err.code===401){ document.getElementById("gateErr").textContent = "Contraseña incorrecta."; }
-    else { document.getElementById("gateErr").textContent = (err && err.msg) ? err.msg : "No se pudo conectar. Revisa tu internet."; }
+  gateBusy = true;
+  var errEl = document.getElementById("gateErr");
+  errEl.textContent = "Probando…";
+  var done = false;
+  // red de seguridad: pase lo que pase, en 13s se muestra algo y se puede reintentar
+  var watchdog = setTimeout(function(){
+    if(done) return;
+    done = true; gateBusy = false;
+    errEl.textContent = "No hubo respuesta del servidor. Toca Entrar otra vez.";
     pw = "";
+  }, 13000);
+
+  apiGet().then(function(res){
+    if(done) return; done = true; clearTimeout(watchdog); gateBusy = false;
+    try{
+      try{ localStorage.setItem(LS_PW, pw); }catch(e){}
+      if(res && Array.isArray(res.data)){ entries = mergeEntries(entries, res.data); saveLocal(); }
+      hideGate();
+      setSync("sync-ok","Guardado y sincronizado");
+      renderAll();
+      doPush();
+    }catch(e2){
+      // entró bien pero algo tronó al dibujar la app: no dejar al usuario atorado
+      errEl.textContent = "Entró, pero hubo un error al cargar: " + (e2 && e2.message ? e2.message : e2);
+      showGate(errEl.textContent);
+    }
+  }).catch(function(err){
+    if(done) return; done = true; clearTimeout(watchdog); gateBusy = false;
+    pw = "";
+    if(err && err.code===401){ errEl.textContent = "Contraseña incorrecta."; return; }
+    var extra = err && err.code ? " (" + err.code + ")" : "";
+    errEl.textContent = (err && err.msg) ? (err.msg + extra) : ("No se pudo conectar. Revisa tu internet." + extra);
   });
 }
 
