@@ -224,7 +224,7 @@
   <input id="gatePw" type="password" inputmode="text" autocomplete="current-password" placeholder="Contraseña">
   <div class="err" id="gateErr"></div>
   <button class="btn" id="gateBtn">Entrar</button>
-  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v4</div>
+  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v5</div>
 </div>
 
 <header class="top">
@@ -831,9 +831,15 @@ function doPush(keepalive){
   apiPost(keepalive).then(function(){
     online = true;
     setSync("sync-ok","Guardado y sincronizado");
-  }).catch(function(){
+  }).catch(function(err){
+    if(err && err.code===401){
+      try{ localStorage.removeItem(LS_PW); }catch(e){}
+      pw = "";
+      showGate("La contraseña dejó de funcionar. Vuelve a escribirla.");
+      return;
+    }
     online = false;
-    setSync("sync-offline","Sin conexión — guardado solo aquí");
+    setSync("sync-offline", (err && err.msg) ? err.msg : "Sin conexión — guardado solo en este equipo");
   });
 }
 function initialSync(){
@@ -875,44 +881,32 @@ function showGate(msg){
 function hideGate(){ document.getElementById("gate").hidden = true; }
 document.getElementById("gateBtn").addEventListener("click", tryGate);
 document.getElementById("gatePw").addEventListener("keydown", function(e){ if(e.key==="Enter") tryGate(); });
-var gateBusy = false;
 function tryGate(){
-  if(gateBusy) return;
   var val = document.getElementById("gatePw").value.trim();
   if(!val) return;
   pw = val;
-  gateBusy = true;
-  var errEl = document.getElementById("gateErr");
-  errEl.textContent = "Probando…";
-  var done = false;
-  // red de seguridad: pase lo que pase, en 13s se muestra algo y se puede reintentar
-  var watchdog = setTimeout(function(){
-    if(done) return;
-    done = true; gateBusy = false;
-    errEl.textContent = "No hubo respuesta del servidor. Toca Entrar otra vez.";
-    pw = "";
-  }, 13000);
-
+  try{ localStorage.setItem(LS_PW, pw); }catch(e){}
+  document.getElementById("gateErr").textContent = "";
+  // Entra de inmediato en modo local — no esperamos a la red para dejarte pasar.
+  // La validación real de la contraseña y la sincronización van en segundo plano.
+  hideGate();
+  renderAll();
+  setSync("sync-syncing","Sincronizando…");
   apiGet().then(function(res){
-    if(done) return; done = true; clearTimeout(watchdog); gateBusy = false;
-    try{
-      try{ localStorage.setItem(LS_PW, pw); }catch(e){}
-      if(res && Array.isArray(res.data)){ entries = mergeEntries(entries, res.data); saveLocal(); }
-      hideGate();
-      setSync("sync-ok","Guardado y sincronizado");
-      renderAll();
-      doPush();
-    }catch(e2){
-      // entró bien pero algo tronó al dibujar la app: no dejar al usuario atorado
-      errEl.textContent = "Entró, pero hubo un error al cargar: " + (e2 && e2.message ? e2.message : e2);
-      showGate(errEl.textContent);
-    }
+    if(res && Array.isArray(res.data)){ entries = mergeEntries(entries, res.data); saveLocal(); }
+    online = true;
+    setSync("sync-ok","Guardado y sincronizado");
+    renderAll();
+    doPush();
   }).catch(function(err){
-    if(done) return; done = true; clearTimeout(watchdog); gateBusy = false;
-    pw = "";
-    if(err && err.code===401){ errEl.textContent = "Contraseña incorrecta."; return; }
-    var extra = err && err.code ? " (" + err.code + ")" : "";
-    errEl.textContent = (err && err.msg) ? (err.msg + extra) : ("No se pudo conectar. Revisa tu internet." + extra);
+    if(err && err.code===401){
+      try{ localStorage.removeItem(LS_PW); }catch(e){}
+      pw = "";
+      showGate("Contraseña incorrecta.");
+      return;
+    }
+    online = false;
+    setSync("sync-offline", (err && err.msg) ? err.msg : "Sin conexión — guardado solo en este equipo");
   });
 }
 
