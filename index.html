@@ -783,11 +783,28 @@ function setSync(state, text){
   el.className = "sync-status " + (state||"");
   el.textContent = text;
 }
+function fetchTimeout(url, opts, ms){
+  opts = opts || {};
+  var ctrl = null, timer = null;
+  try{ ctrl = new AbortController(); opts.signal = ctrl.signal; }catch(e){}
+  if(ctrl){ timer = setTimeout(function(){ try{ ctrl.abort(); }catch(e){} }, ms||15000); }
+  return fetch(url, opts).then(function(r){ if(timer) clearTimeout(timer); return r; },
+                                 function(e){ if(timer) clearTimeout(timer);
+                                   throw (e && e.name==="AbortError") ? { code:0, msg:"La conexión tardó demasiado. Revisa tu internet o vuelve a intentar." } : { code:0, msg:"No se pudo conectar. Revisa tu internet." }; });
+}
+function readErr(r){
+  // intenta sacar el mensaje real que manda el servidor (api/data.js)
+  return r.text().then(function(t){
+    var m = "";
+    try{ var j = JSON.parse(t); m = j && j.error ? j.error : ""; }catch(e){ m = ""; }
+    throw { code:r.status, msg:m || ("El servidor respondió con un error (" + r.status + ").") };
+  });
+}
 function apiGet(){
-  return fetch("api/data", { headers:{ "x-app-password": pw }, cache:"no-store" })
+  return fetchTimeout("api/data", { headers:{ "x-app-password": pw }, cache:"no-store" })
     .then(function(r){
-      if(r.status===401){ throw { code:401 }; }
-      if(!r.ok) throw { code:r.status };
+      if(r.status===401){ return r.text().then(function(){ throw { code:401 }; }); }
+      if(!r.ok) return readErr(r);
       return r.json();
     });
 }
@@ -798,7 +815,10 @@ function apiPost(keepalive){
     body: JSON.stringify({ data: entries })
   };
   if(keepalive) opts.keepalive = true;
-  return fetch("api/data", opts).then(function(r){ if(!r.ok) throw { code:r.status }; return r.json(); });
+  return fetchTimeout("api/data", opts).then(function(r){
+    if(!r.ok) return readErr(r);
+    return r.json();
+  });
 }
 function schedulePush(){
   if(pushTimer) clearTimeout(pushTimer);
@@ -835,7 +855,7 @@ function initialSync(){
       return;
     }
     online = false;
-    setSync("sync-offline","Sin conexión — guardado solo aquí");
+    setSync("sync-offline", err && err.msg ? err.msg : "Sin conexión — guardado solo aquí");
     renderAll();
   });
 }
@@ -868,7 +888,7 @@ function tryGate(){
     doPush();
   }).catch(function(err){
     if(err && err.code===401){ document.getElementById("gateErr").textContent = "Contraseña incorrecta."; }
-    else { document.getElementById("gateErr").textContent = "No se pudo conectar. Revisa tu internet."; }
+    else { document.getElementById("gateErr").textContent = (err && err.msg) ? err.msg : "No se pudo conectar. Revisa tu internet."; }
     pw = "";
   });
 }
