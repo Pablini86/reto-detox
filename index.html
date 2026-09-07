@@ -232,7 +232,7 @@
   <input id="gatePw" type="password" inputmode="text" autocomplete="current-password" placeholder="Contraseña">
   <div class="err" id="gateErr"></div>
   <button class="btn" id="gateBtn">Entrar</button>
-  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v10</div>
+  <div style="margin-top:18px;font-size:11px;color:var(--ink-faint)">versión v11</div>
 </div>
 
 <header class="top">
@@ -597,7 +597,7 @@ var MORNING_STEPS = [
   ["min 6–7", "Saca la avena, muévela. Encima: el plátano, 1 cucharada (15 g) de crema de cacahuate y canela."],
   ["min 7–10", "Echa el huevo al sartén caliente SIN aceite. Muévelo con la pala 2–3 minutos hasta que cuaje. Apaga."],
   ["min 10–20", "Siéntate. Primero el jugo verde de un jalón, luego la avena y el huevo. Con calma."],
-  ["min 20–22", "Arma la mochila: 1 tupper de comida (de la hielera), 1 yogurt, 1 tupper de bastones, 2 frutas, botella de agua llena, 1 bolsita con aceitunas + ¼ de aguacate."],
+  ["min 20–22", "Arma la mochila: 1 tupper de comida (de la hielera), 1 yogurt, 1 tupper de bastones, 2 frutas, botella de agua llena, ½ aguacate para la comida (llévalo entero y lo partes allá)."],
   ["min 22–25", "Deja el tazón, el vaso y el sartén remojando en el fregadero. Listo."]
 ];
 var MORNING_KITCHEN_MIN = 25;
@@ -609,8 +609,8 @@ var PREP_INTRO = "En total son ~1 h 20 min de tu tiempo. Mientras el pollo y el 
 var PREP = [
   { t:"15 min tuyos + 40 min de cocción", text:"POLLO. Pesa 600 g de pechuga de pollo cruda. Ponla en una olla con agua que la cubra, ½ cebolla, 2 dientes de ajo y 1 cucharadita de sal. Tapa y hierve 40 min a fuego medio. Sácala, deja que enfríe 10 min y deshébrala con 2 tenedores.", video:"como deshebrar pollo facil" },
   { t:"5 min tuyos + 18 min de cocción", text:"ARROZ. Enjuaga 1 taza (200 g) de arroz crudo hasta que el agua salga clara. Ponlo en una olla con 2 tazas (500 ml) de agua y ½ cucharadita de sal. Tapa, fuego bajo 18 min, apaga y NO destapes 5 min más. Sale como 600 g cocido.", video:"como hacer arroz blanco que no se bata" },
-  { t:"10 min", text:"ARMA LAS 5 COMIDAS. En 5 tuppers medianos pon en cada uno: 1 puño de pollo deshebrado + 6 cucharadas soperas de arroz + 1 puño de lechuga o espinaca. Etiqueta cada tupper: COMIDA LUN, MAR, MIÉ, JUE, VIE. El aguacate y las aceitunas NO se ponen ahora, se las agregas el día que te la comes." },
-  { t:"25 min", text:"JUGO VERDE, 10 BOLSAS. En cada bolsa ziploc chica mete: 1 tallo de apio en trozos de 2 cm + ⅓ de pepino en rodajas + ½ penca de nopal en cuadritos (sin espinas) + 1 rebanada de piña de 1 cm de grosor (o ½ manzana en cubos) + 1 puño de espinaca (unas 15 hojas) + 1 rodaja de jengibre del tamaño de una moneda de 1 peso. Cierra las 10 bolsas y al congelador." },
+  { t:"10 min", text:"ARMA LAS 5 COMIDAS. En 5 tuppers medianos pon en cada uno: 1 puño de pollo deshebrado + 6 cucharadas soperas de arroz + 1 puño de lechuga o espinaca. Etiqueta cada tupper: COMIDA LUN, MAR, MIÉ, JUE, VIE. El aguacate NO se pone ahora, le agregas ½ aguacate el día que te comes cada tupper." },
+  { t:"25 min", text:"JUGO VERDE, 10 BOLSAS. En cada bolsa ziploc chica mete: 1 rama entera de apio del manojo — la penca larga con sus hojas, de unos 20–25 cm; si te toca una muy gruesa o de más de 30 cm usa solo la mitad — cortada en trozos de 2 cm · + ⅓ de un pepino mediano (el pepino entero mide ~18–20 cm: pártelo en 3 y usa un pedazo) en rodajas · + nopal en cuadritos sin espinas, como ½ taza (1 penca chica o media penca grande) · + 1 rebanada de piña ya pelada, de 1 cm de grosor (o ½ manzana chica en cubos) · + 1 puño de espinaca, unas 15 hojas grandes (~20 g) · + 1 rodaja de jengibre fresco del tamaño y grosor de una moneda de $1. Cierra las 10 bolsas y al congelador." },
   { t:"5 min", text:"COLACIÓN 1, 5 FRASCOS. En 5 frascos chicos pon en cada uno 190 g de yogurt griego + 1 pizca de canela. Tápalos. (Si te da flojera, compra 5 yogures griegos individuales sin azúcar y sáltate esto.)" },
   { t:"10 min", text:"COLACIÓN 2, 5 TUPPERS. Corta 1 jícama y 3 pepinos en bastones. Repártelos en 5 tuppers chicos. Ponle a cada uno 1 cucharada de agua y tápalos para que no se resequen." },
   { t:"5 min", text:"FRUTA. Deja 10 manzanas o plátanos en el frutero (no necesitan refri). Lava las fresas o uvas y guárdalas en 1 tupper en el refri. Cada mañana agarras 2 frutas: una para cada colación." }
@@ -733,7 +733,7 @@ var EQ = [
     ["Leche de avena","1 taza"],["Yogurt de coco","120 g"]
   ]],
   ["Grasa sin proteína — 1 porción", "table", [
-    ["Aguacate","¼ pieza"],["Aceite de oliva","½ cucharada (7 ml)"],["Aceitunas","5 piezas"],
+    ["Aguacate","¼ pieza"],["Aceite de oliva","½ cucharada (7 ml)"],
     ["Mayonesa","1 cucharada"],["Ghee","1 cucharada"],["Coco rallado sin azúcar","1 cucharada"],
     ["Aceite de coco","1 cucharadita"],["Chocolate amargo sin azúcar (Larín, Turín, Carlos V, Lindt)","1 pieza"]
   ]],
